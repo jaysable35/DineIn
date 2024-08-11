@@ -1,0 +1,146 @@
+/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Main Styles */
+.outercontainer {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    background: #0D0F11;
+}
+
+.rectangle104 {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: #FCFCF9;
+}
+
+.logo {
+    position: absolute;
+    text-align: center;
+    color: white;
+    font-size: 36px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 20%;
+}
+
+.enter-your-mobile-number {
+    position: absolute;
+    text-align: center;
+    color: black;
+    font-size: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 40%;
+}
+
+.otp-info {
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 35%;
+    color: #827B7B;
+    font-size: 35px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+.otp-info .otp-bold {
+    color: #151515;
+    font-weight: 600;
+}
+
+.welcome {
+    position: absolute;
+    text-align: center;
+    color: black;
+    font-size: 60px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    word-wrap: break-word;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 25%;
+}
+
+.rectangle105 {
+    width: 353px;
+    height: 60px;
+    position: absolute;
+    background: #EDECE9;
+    border-radius: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.country-code {
+    text-align: center;
+    color: #827B7B;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+.vector2 {
+    width: 1px;
+    height: 28.5px;
+    border: 1px #B6ADAD solid;
+    margin: 0 10px;
+}
+
+.rectangle106 {
+    width: 200px;
+    height: 60px;
+    position: absolute;
+    background: #0D0F11;
+    color: white;
+    border-radius: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .rectangle105, .rectangle106 {
+        width: 90%;
+    }
+
+    .logo, .enter-your-mobile-number, .otp-info, .welcome, .country-code {
+        font-size: 16px;
+    }
+
+    .otp-button button {
+        height: 50px;
+    }
+}

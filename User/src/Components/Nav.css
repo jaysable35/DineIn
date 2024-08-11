@@ -1,0 +1,36 @@
+/* Nav.css */
+.nav-container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+    position: relative;
+    height: 50px; /* Adjust height if needed */
+    padding-top: 0px;
+    padding-right: 0px;
+}
+
+.nav-sec {
+    position: absolute;
+}
+
+.cart-icon {
+    position: relative;
+    display: inline-block;
+}
+
+.cart-icon img {
+    width: 50px; /* Adjust width for smaller size */
+    height: 50px; /* Adjust height for smaller size */
+}
+
+.cart-badge {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    background-color: black;
+    color: white;
+    border-radius: 50%;
+
+    padding: 2px 6px; /* Adjust padding for smaller size */
+    font-size: 0.7rem; /* Adjust font size for smaller size */
+}

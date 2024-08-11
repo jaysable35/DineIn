@@ -1,0 +1,49 @@
+
+.Welcome{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+
+.textmsg{
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    padding-top: 30px;
+}
+.input-wrapper{
+    margin: 100px;
+    display: flex;
+    /* flex-direction: column; */
+    align-items: center;
+    justify-content: center;
+    top:5px;
+}
+input{
+    width: 50px;
+    height: 50px;
+    background-color: #EDECE9;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    margin-right: 10px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    text-align: center;
+    font-size: large;
+}
+
+.submit button{
+    width:327px;
+    height:50px;
+    top: 150px;
+    left:24px;
+    border-radius: 8px;
+    background: black;
+    color: white;
+    position: relative;
+}
+
