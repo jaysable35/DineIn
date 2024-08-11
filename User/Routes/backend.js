@@ -1,151 +1,166 @@
+import dotenv from 'dotenv';
 import express from 'express';
-import mongoose from 'mongoose';
+import Order from './models/Order_model.js';
+import Counter from './models/Counter.js';
+import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
-import { Server } from 'socket.io';
-import { createServer } from 'http';
+import http from 'http'
+import { Server as SocketIOServer } from 'socket.io';
+import mongoose from 'mongoose';
 
+dotenv.config();
 const app = express();
-const httpServer = createServer(app);
+const server = http.createServer(app);
+const io = new SocketIOServer(server);
 
-// Set up Socket.IO server
-const io = new Server(httpServer, {
-    cors: {
-        origin: "https://dinein-1.onrender.com", // Replace with your client URL
-        methods: ["GET", "POST", "PATCH", "DELETE"],
-        credentials: true
-    }
-});
+// Create a Socket.IO server instance with CORS options
+app.use(cors({
+    origin: "https://dinein.live", // The origin of your client application
+    methods: ["GET", "POST","DELETE","OPTION","PATCH"],
+    allowedHeaders: ["Content-Type","Authorization"],
+    credentials: true
+}));
 
-const PORT = process.env.PORT || 3001;
-
-mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-
-// Define the order schema and model for the `orders` collection
-const orderSchema = new mongoose.Schema({
-    token: Number,
-    items: Array,
-    status: String // This will be either "current" or "accepted"
-});
-
-const Order = mongoose.model('Order', orderSchema);
-
-// Define the order schema and model for the `final_orders` collection
-const finalOrderSchema = new mongoose.Schema({
-    token: Number,
-    items: Array,
-    status: String // This will be "done"
-});
-
-const FinalOrder = mongoose.model('FinalOrder', finalOrderSchema);
-
-app.use(cors());
-app.use(express.json());
-
-// Endpoint to get all current and accepted orders
-app.get('/ambika-admin/dashboard', async (req, res) => {
-    try {
-        const orders = await Order.find();
-        res.json(orders);
-    } catch (err) {
-        res.status(500).send('Server error');
-    }
-});
-
-// Endpoint to move an order from "current" to "accepted"
-app.patch('/ambika-admin/orders/:token', async (req, res) => {
-    try {
-        const { token } = req.params;
-        const { status } = req.body;
-
-        const updatedOrder = await Order.findOneAndUpdate(
-            { token: parseInt(token) },
-            { status },
-            { new: true }
-        );
-
-        if (!updatedOrder) {
-            return res.status(404).send('Order not found');
-        }
-
-        io.emit('orderUpdated', updatedOrder); // Emit event to all connected clients
-
-        res.json(updatedOrder);
-    } catch (err) {
-        res.status(500).send('Server error');
-    }
-});
-
-// Endpoint to move an order from `accepted` to `done`
-app.patch('/ambika-admin/final-orders/:token', async (req, res) => {
-    try {
-        const { token } = req.params;
-        const { status } = req.body;
-
-        // Find the order in the `Order` collection
-        const orderToMove = await Order.findOne({ token: parseInt(token) });
-
-        if (!orderToMove) {
-            return res.status(404).send('Order not found');
-        }
-
-        // Create a new order in the `FinalOrder` collection
-        const newFinalOrder = new FinalOrder({
-            token: orderToMove.token,
-            items: orderToMove.items,
-            status: "done"
-        });
-
-        await newFinalOrder.save();
-
-        // Remove the order from the `Order` collection
-        await Order.deleteOne({ token: parseInt(token) });
-
-        io.emit('orderUpdated', newFinalOrder); // Emit event to all connected clients
-
-        res.json(newFinalOrder);
-    } catch (err) {
-        res.status(500).send('Server error');
-    }
-});
-
-// Endpoint to decline an order (remove from `orders` or `final_orders`)
-app.delete('/ambika-admin/orders/:token', async (req, res) => {
-    try {
-        const { token } = req.params;
-
-        // Attempt to delete from `Order` collection
-        const result = await Order.deleteOne({ token: parseInt(token) });
-
-        if (result.deletedCount === 0) {
-            // If not found in `Order`, attempt to delete from `FinalOrder` collection
-            const finalResult = await FinalOrder.deleteOne({ token: parseInt(token) });
-
-            if (finalResult.deletedCount === 0) {
-                return res.status(404).send('Order not found');
-            }
-
-            io.emit('orderDeleted', { token: parseInt(token) });
-            return res.status(204).send(); // No Content
-        }
-
-        io.emit('orderDeleted', { token: parseInt(token) });
-        res.status(204).send(); // No Content
-    } catch (err) {
-        res.status(500).send('Server error');
-    }
-});
 
 io.on('connection', (socket) => {
-    console.log('A client connected');
-
+    console.log('a user connected');
     socket.on('disconnect', () => {
-        console.log('A client disconnected');
+        console.log('user disconnected');
     });
 });
 
-httpServer.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => console.log("DB Connected"))
+  .catch(err => console.log('MongoDB Connection Error:', err));
+
+app.options('*',cors());
+app.use(express.json());
+
+app.post('/ambika/user/cart', async (req, res) => {
+    try {
+
+        const counter = await Counter.findByIdAndUpdate(
+            { _id: 'orderCounter' },
+            { $inc: { seq: 1 } },
+            { new: true, upsert: true }
+        );
+
+        const token=counter.seq;
+        const { cart, total } = req.body;
+        const orderId=uuidv4();
+
+        const order = new Order({
+            orderId,
+            items: cart,
+            token,
+            total
+        });
+        await order.save();
+        
+        res.status(200).json({ 
+            
+            message: 'Order placed successfully', 
+            token
+        });
+
+    } catch (error) {
+        console.error('Error placing order:', error);
+        res.status(500).json({ message: 'Error placing order', error: error.message });
+    }
+});
+
+// Route to fetch orders based on status
+app.get('/ambika-admin/dashboard', async (req, res) => {
+    try {
+        // Fetch all orders (or modify to fetch based on criteria if needed)
+        const orders = await Order.find(); 
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Error fetching orders', error: error.message });
+    }
+});
+
+// Update order status
+app.patch('/ambika-admin/orders/:token', async (req, res) => {
+    const { token } = req.params;
+    const { status } = req.body;
+
+    try {
+        // Find the order by token and update its status
+        const updatedOrder = await Order.findOneAndUpdate(
+            { token },
+            { status },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({
+            message: 'Order status updated successfully',
+            order: updatedOrder
+        });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ message: 'Error updating order status', error: error.message });
+    }
+});
+
+// Finalize order (for "done" status)
+app.post('/ambika-admin/orders/finalize/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Move the order to the finalized collection or update its status
+        const order = await Order.findOneAndUpdate(
+            { token },
+            { finalized: true }, // You can customize this to suit your logic
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({
+            message: 'Order finalized successfully',
+            order
+        });
+    } catch (error) {
+        console.error('Error finalizing order:', error);
+        res.status(500).json({ message: 'Error finalizing order', error: error.message });
+    }
+});
+
+// Delete an order
+app.delete('/ambika-admin/orders/:token', async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Find and delete the order by token
+        const deletedOrder = await Order.findOneAndDelete({ token });
+
+        if (!deletedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({
+            message: 'Order deleted successfully',
+            order: deletedOrder
+        });
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ message: 'Error deleting order', error: error.message });
+    }
+});
+
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
