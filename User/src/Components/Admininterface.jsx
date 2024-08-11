@@ -24,6 +24,10 @@ function Admin() {
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data);
+                console.log('Current Orders:', data.currentOrders);
+                console.log('Accepted Orders:', data.acceptedOrders);
+                console.log('Done Orders:', data.doneOrders);
+
                 // Ensure that all fetched orders are set to currentOrders
                 setCurrentOrders(data.currentOrders || []);
                 setAcceptedOrders(data.acceptedOrders || []);
@@ -35,11 +39,14 @@ function Admin() {
     }, []);
 
     const handleDone = (token) => {
+        console.log('Handle Done Clicked:', token);
+
         // Find the order in currentOrders or acceptedOrders
         const orderInCurrent = currentOrders.find(order => order.token === token);
         const orderInAccepted = acceptedOrders.find(order => order.token === token);
 
         if (orderInCurrent) {
+            console.log('Order found in Current Orders:', orderInCurrent);
             // Move from Current to Accepted
             setCurrentOrders(currentOrders.filter(order => order.token !== token));
             setAcceptedOrders([...acceptedOrders, orderInCurrent]);
@@ -49,8 +56,12 @@ function Admin() {
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'accepted' }), // Update status to 'accepted'
                 headers: { 'Content-Type': 'application/json' }
-            });
+            })
+            .then(response => response.json())
+            .then(data => console.log('Update Backend Response:', data))
+            .catch(error => console.error('Error updating backend:', error));
         } else if (orderInAccepted) {
+            console.log('Order found in Accepted Orders:', orderInAccepted);
             // Move from Accepted to Done
             setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
             setDoneOrders([...doneOrders, orderInAccepted]);
@@ -60,32 +71,45 @@ function Admin() {
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'done' }), // Update status to 'done'
                 headers: { 'Content-Type': 'application/json' }
-            });
+            })
+            .then(response => response.json())
+            .then(data => console.log('Update Backend Response:', data))
+            .catch(error => console.error('Error updating backend:', error));
         }
     };
 
     const handleDecline = (token) => {
+        console.log('Handle Decline Clicked:', token);
+
         // Remove the order from Current or Accepted
         const orderInCurrent = currentOrders.find(order => order.token === token);
         if (orderInCurrent) {
+            console.log('Order found in Current Orders:', orderInCurrent);
             setCurrentOrders(currentOrders.filter(order => order.token !== token));
 
             // Optionally update backend
             fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
-            });
+            })
+            .then(response => response.json())
+            .then(data => console.log('Delete Backend Response:', data))
+            .catch(error => console.error('Error deleting from backend:', error));
         }
 
         const orderInAccepted = acceptedOrders.find(order => order.token === token);
         if (orderInAccepted) {
+            console.log('Order found in Accepted Orders:', orderInAccepted);
             setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
 
             // Optionally update backend
             fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
-            });
+            })
+            .then(response => response.json())
+            .then(data => console.log('Delete Backend Response:', data))
+            .catch(error => console.error('Error deleting from backend:', error));
         }
     };
 
@@ -135,12 +159,14 @@ function Admin() {
             {/* Done Orders */}
             <div className="Done" style={{ width: 400, height: 'calc(100vh - 104px)', right: 30, top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: '100%', height: 70, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
-                <div className="Done0" style={{ left: 160, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done Orders</div>
+                <div className="Done0" style={{ left: 160, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done</div>
                 {doneOrders.map(order => (
                     <AdminCard
                         key={order.token}
                         token={order.token}
                         items={order.items}
+                        onDone={() => handleDone(order.token)}
+                        onDecline={() => handleDecline(order.token)}
                         showDoneButton={false}
                         showDeclineButton={false}
                     />
