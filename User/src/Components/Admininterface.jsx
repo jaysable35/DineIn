@@ -35,21 +35,23 @@ function Admin() {
     }, []);
 
     useEffect(() => {
-        // Fetch orders from the backend
+        // Fetch orders from the backend with categorization
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched data:', data);
+                console.log('Fetched data:', data); // Log the fetched data
     
+                // Ensure data is an array
                 if (Array.isArray(data)) {
-                    // Assuming each order object has a status property to categorize
-                    const currentOrders = data.filter(order => order.status === 'current');
-                    const acceptedOrders = data.filter(order => order.status === 'accepted');
-                    const doneOrders = data.filter(order => order.status === 'done');
+                    // Categorize orders based on their status
+                    const current = data.filter(order => order.status === 'current');
+                    const accepted = data.filter(order => order.status === 'accepted');
+                    const done = data.filter(order => order.status === 'done');
     
-                    setCurrentOrders(currentOrders);
-                    setAcceptedOrders(acceptedOrders);
-                    setDoneOrders(doneOrders);
+                    // Set the orders in their respective state arrays
+                    setCurrentOrders(current);
+                    setAcceptedOrders(accepted);
+                    setDoneOrders(done);
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -58,6 +60,7 @@ function Admin() {
                 console.error('Error fetching data:', error);
             });
     }, []);
+    
     
     
     
