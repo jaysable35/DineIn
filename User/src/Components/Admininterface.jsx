@@ -34,24 +34,24 @@ function Admin() {
     }, []);
 
     const handleDone = (token) => {
-        const orderInCurrent = currentOrders.find(order => order.token === token);
-        const orderInAccepted = acceptedOrders.find(order => order.token === token);
+        const orderInCurrent = currentOrders.find(order => order.token == token);
+        const orderInAccepted = acceptedOrders.find(order => order.token == token);
 
         if (orderInCurrent) {
             // Move from Current to Accepted
-            setCurrentOrders(currentOrders.filter(order => order.token !== token));
+            setCurrentOrders(currentOrders.filter(order => order.token != token));
             setAcceptedOrders([...acceptedOrders, orderInCurrent]);
         } else if (orderInAccepted) {
             // Move from Accepted to Done
-            setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
+            setAcceptedOrders(acceptedOrders.filter(order => order.token != token));
             setDoneOrders([...doneOrders, orderInAccepted]);
         }
     };
 
     const handleDecline = (token) => {
         // Remove the order from Current or Accepted
-        setCurrentOrders(currentOrders.filter(order => order.token !== token));
-        setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
+        setCurrentOrders(currentOrders.filter(order => order.token != token));
+        setAcceptedOrders(acceptedOrders.filter(order => order.token != token));
     };
 
     const handleNewOrder = () => {
