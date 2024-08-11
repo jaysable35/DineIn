@@ -7,7 +7,7 @@ const server = new WebSocketServer({ port: 3002 });
 
 const io = new SocketIOServer(server, {
     cors: {
-        origin: "https://dinein.live",
+        origin: "https://www.dinein.live",
         methods: ["GET", "POST","PATCH", "DELETE", "OPTIONS"],
         credentials: true
     }
