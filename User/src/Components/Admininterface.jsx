@@ -40,11 +40,11 @@ function Admin() {
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data); // Log the fetched data
-                // Ensure that the fetched data contains expected fields
-                if (data && data.currentOrders && data.acceptedOrders && data.doneOrders) {
-                    setCurrentOrders(data.currentOrders);
-                    setAcceptedOrders(data.acceptedOrders);
-                    setDoneOrders(data.doneOrders);
+                // Handle different data structures
+                if (data && data.orders) {
+                    setCurrentOrders(data.orders.current || []);
+                    setAcceptedOrders(data.orders.accepted || []);
+                    setDoneOrders(data.orders.done || []);
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -52,7 +52,7 @@ function Admin() {
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, []);
+    }, []); // Empty dependency array means this runs once when the component mounts
     
     useEffect(() => {
         // Log the state variables when they change
