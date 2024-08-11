@@ -3,7 +3,7 @@ import Counter from './Counter'; // Adjust the path to your Counter model
 import cron from 'node-cron';
 
 // Connect to MongoDB
-mongoose.connect('mongodb://your_mongodb_uri', {
+mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log('DB Connected'))
