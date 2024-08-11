@@ -124,11 +124,10 @@ function Admin() {
                 <div className="offline_btn" style={{ position: 'fixed', bottom: 50, right: 20 }}>
                     <button
                         onClick={handleNewOrder} // Handle new order button click
-                        style={{ height: 80, width: 200, fontSize: 25, borderRadius: 20, border: '1px grey solid', backgroundColor: '#31B475', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,color:'white' }}>
+                        style={{ height: 80, width: 200, fontSize: 25, borderRadius: 20, border: '1px grey solid', backgroundColor: '#31B475', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: 'white' }}>
                         <span style={{ fontSize: 50, color: 'white' }}>+ </span>New Order
                     </button>
                 </div>
-
             </div>
         </div>
     );

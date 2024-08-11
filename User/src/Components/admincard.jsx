@@ -5,7 +5,7 @@ function AdminCard({ token, items, onDone, onDecline, showDoneButton, showDeclin
     // Calculate the total price of the items
     const safeItems = Array.isArray(items) ? items : [];
 
-    const total = items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+    const total = safeItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
     return (
         <Card className="admin-card" style={{ width: 366, height: 300, background: 'white', borderRadius: 16, position: 'relative', top: 100, left: 20, marginBottom: 10 }}>
             <Card.Body style={{ padding: '20px' }}>
@@ -15,33 +15,33 @@ function AdminCard({ token, items, onDone, onDecline, showDoneButton, showDeclin
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ flex: 2 }}>Item</span>
                         <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
-                            <span style={{ flex: 1, textAlign: 'center' }}>Qty</span>
-                            <span style={{ flex: 1, textAlign: 'center' }}>Price</span>
+                            <span style={{ flex: 1, textAlign: 'right' }}>Qty</span>
+                            <span style={{ flex: 1, textAlign: 'right' }}>Price</span>
                         </div>
                     </div>
-                    <div style={{ width: '100%', height: 1, border: '1px #C5BCBC solid', marginTop: 10, marginBottom: 30 }}></div>
-                    {items.map((item, index) => (
-                        <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                </Card.Subtitle>
+                <div className="admin-card-items" style={{ marginTop: 10 }}>
+                    {safeItems.map((item, index) => (
+                        <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
                             <span style={{ flex: 2 }}>{item.name}</span>
                             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
-                                <span style={{ flex: 1, textAlign: 'center' }}>{item.quantity}</span>
-                                <span style={{ flex: 1, textAlign: 'center' }}>₹{item.price * item.quantity}</span>
+                                <span style={{ flex: 1, textAlign: 'right' }}>{item.quantity}</span>
+                                <span style={{ flex: 1, textAlign: 'right' }}>{item.price}</span>
                             </div>
                         </div>
                     ))}
-                </Card.Subtitle>
-                <div style={{ width: '100%', height: 1, border: '1px #C5BCBC solid', marginTop: 20, marginBottom: 10 }}></div>
-                <div style={{ textAlign: 'right', color: '#000000', fontSize: 24, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word' }}>
-                    Total: ₹{total}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 30 }}>
-                    {showDeclineButton && (
-                        <button style={{ height: 40, width: 160, borderRadius: 8, border: '2px solid grey', fontWeight: 'bolder', fontSize: 20 }} onClick={() =>{console.log("Declined button of token:",token);onDecline(token)}}>Decline</button>
-                    )}
-                    {showDoneButton && (
-                        <button style={{ height: 40, width: 160, borderRadius: 8, border: '2px solid #31B475', background: '#31B475', fontWeight: 'bolder', fontSize: 20, color: 'white' }} onClick={() =>{console.log("Done button of token:",token);onDone(token)}}>Done</button>
-                    )}
+                <hr style={{ margin: '10px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 'bold' }}>Total:</span>
+                    <span style={{ fontWeight: 'bold' }}>{total}</span>
                 </div>
+                {showDoneButton && (
+                    <button onClick={onDone} style={{ backgroundColor: 'green', color: 'white', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Done</button>
+                )}
+                {showDeclineButton && (
+                    <button onClick={onDecline} style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: 5 }}>Decline</button>
+                )}
             </Card.Body>
         </Card>
     );
