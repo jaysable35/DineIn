@@ -4,7 +4,7 @@ import AdminCard from "./admincard";
 import logo from '../assets/dinein.png';
 import io from "socket.io-client";
 
-const socket = io('http://localhost:3002', {
+const socket = io('https://dinein-1.onrender.com', {
     transports: ['websocket', 'polling'],
     withCredentials: true
 });
@@ -22,7 +22,7 @@ function Admin() {
 
     useEffect(() => {
         // Fetch orders from the backend without filtering by status
-        fetch('http://localhost:3001/ambika-admin/dashboard')
+        fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
                 setAllOrders(data);

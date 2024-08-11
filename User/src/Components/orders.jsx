@@ -12,7 +12,7 @@ const Kart = ({ cart, updateCart }) => {
 
     const handlePlaceOrder = async () => {
         try {
-            const response = await fetch('http://localhost:3001/ambika/user/cart', {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

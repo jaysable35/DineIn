@@ -7,7 +7,7 @@ const server = new WebSocketServer({ port: 3002 });
 
 const io = new SocketIOServer(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://neon-genie-60b120.netlify.app",
         methods: ["GET", "POST","PATCH", "DELETE", "OPTIONS"],
         credentials: true
     }

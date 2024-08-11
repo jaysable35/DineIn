@@ -15,7 +15,7 @@ const io = new SocketIOServer(server);
 
 // Create a Socket.IO server instance with CORS options
 app.use(cors({
-    origin: "http://localhost:5173", // The origin of your client application
+    origin: "https://neon-genie-60b120.netlify.app", // The origin of your client application
     methods: ["GET", "POST","DELETE","OPTION","PATCH"],
     allowedHeaders: ["Content-Type","Authorization"],
     credentials: true
