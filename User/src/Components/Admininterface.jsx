@@ -17,14 +17,14 @@ function Admin() {
     const [currentOrders, setCurrentOrders] = useState([]);
     const [acceptedOrders, setAcceptedOrders] = useState([]);
     const [doneOrders, setDoneOrders] = useState([]);
-    const [newOrderToken, setNewOrderToken] = useState(301); // Initialize token counter starting from 301
 
     useEffect(() => {
-        // Fetch orders from the backend with categorization
+        // Fetch orders from the backend
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched data:', data); // Log the fetched data
+                console.log('Fetched data:', data);
+                // Ensure that all fetched orders are set to currentOrders
                 setCurrentOrders(data.currentOrders || []);
                 setAcceptedOrders(data.acceptedOrders || []);
                 setDoneOrders(data.doneOrders || []);
@@ -34,14 +34,8 @@ function Admin() {
             });
     }, []);
 
-    useEffect(() => {
-        // Log the state variables when they change
-        console.log('Current Orders:', currentOrders);
-        console.log('Accepted Orders:', acceptedOrders);
-        console.log('Done Orders:', doneOrders);
-    }, [currentOrders, acceptedOrders, doneOrders]);
-
     const handleDone = (token) => {
+        // Find the order in currentOrders or acceptedOrders
         const orderInCurrent = currentOrders.find(order => order.token === token);
         const orderInAccepted = acceptedOrders.find(order => order.token === token);
 
@@ -49,10 +43,9 @@ function Admin() {
             // Move from Current to Accepted
             setCurrentOrders(currentOrders.filter(order => order.token !== token));
             setAcceptedOrders([...acceptedOrders, orderInCurrent]);
-            console.log('Moved order to Accepted:', orderInCurrent);
 
-            // Update backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'accepted' }), // Update status to 'accepted'
                 headers: { 'Content-Type': 'application/json' }
@@ -61,10 +54,9 @@ function Admin() {
             // Move from Accepted to Done
             setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
             setDoneOrders([...doneOrders, orderInAccepted]);
-            console.log('Moved order to Done:', orderInAccepted);
 
-            // Update backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'done' }), // Update status to 'done'
                 headers: { 'Content-Type': 'application/json' }
@@ -74,32 +66,27 @@ function Admin() {
 
     const handleDecline = (token) => {
         // Remove the order from Current or Accepted
-        setCurrentOrders(currentOrders.filter(order => order.token !== token));
-        setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-        console.log('Declined order:', token);
+        const orderInCurrent = currentOrders.find(order => order.token === token);
+        if (orderInCurrent) {
+            setCurrentOrders(currentOrders.filter(order => order.token !== token));
 
-        // Update backend
-        fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
-        });
-    };
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
-    const handleNewOrder = () => {
-        const newOrder = {
-            token: newOrderToken,
-            items: [] // Empty items array for new orders
-        };
-        setCurrentOrders([...currentOrders, newOrder]);
-        setNewOrderToken(newOrderToken + 1); // Increment the token for the next new order
-        console.log('Added new order:', newOrder);
+        const orderInAccepted = acceptedOrders.find(order => order.token === token);
+        if (orderInAccepted) {
+            setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
 
-        // Optionally add new order to backend
-        fetch('https://dinein-6bqx.onrender.com/ambika-admin/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newOrder)
-        });
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
     };
 
     return (
@@ -148,8 +135,7 @@ function Admin() {
             {/* Done Orders */}
             <div className="Done" style={{ width: 400, height: 'calc(100vh - 104px)', right: 30, top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: '100%', height: 70, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
-                <div className="Accepted0" style={{ left: 170, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done</div>
-
+                <div className="Done0" style={{ left: 160, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done Orders</div>
                 {doneOrders.map(order => (
                     <AdminCard
                         key={order.token}
@@ -159,14 +145,6 @@ function Admin() {
                         showDeclineButton={false}
                     />
                 ))}
-
-                <div className="offline_btn" style={{ position: 'fixed', bottom: 50, right: 20 }}>
-                    <button
-                        onClick={handleNewOrder} // Handle new order button click
-                        style={{ height: 80, width: 200, fontSize: 25, borderRadius: 20, border: '1px grey solid', backgroundColor: '#31B475', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, color: 'white' }}>
-                        <span style={{ fontSize: 50, color: 'white' }}>+ </span>New Order
-                    </button>
-                </div>
             </div>
         </div>
     );
