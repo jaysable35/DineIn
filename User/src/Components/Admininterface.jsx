@@ -22,7 +22,7 @@ function Admin() {
 
     useEffect(() => {
         // Fetch orders from the backend without filtering by status
-        fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
+        fetch('dinein.live/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
                 setAllOrders(data);
