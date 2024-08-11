@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main":"backend.js",
+  "main": "backend.js",
   "scripts": {
     "start": "node backend.js ",
     "dev": "vite",
@@ -29,6 +29,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
     "react-slick": "^0.30.2",
+    "react-spinners": "^0.14.1",
     "reactdom": "^2.0.0",
     "slick": "^1.12.2",
     "slick-carousel": "^1.8.1",
