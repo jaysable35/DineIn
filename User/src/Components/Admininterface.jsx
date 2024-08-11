@@ -35,23 +35,13 @@ function Admin() {
     }, []);
 
     useEffect(() => {
-        // Fetch orders from the backend with categorization
+        // Fetch orders from the backend and store them in currentOrders
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data); // Log the fetched data
-    
-                // Ensure data is an array
                 if (Array.isArray(data)) {
-                    // Categorize orders based on their status
-                    const current = data.filter(order => order.status === 'current');
-                    const accepted = data.filter(order => order.status === 'accepted');
-                    const done = data.filter(order => order.status === 'done');
-    
-                    // Set the orders in their respective state arrays
-                    setCurrentOrders(current);
-                    setAcceptedOrders(accepted);
-                    setDoneOrders(done);
+                    setCurrentOrders(data); // Store all fetched orders in currentOrders
                 } else {
                     console.error('Unexpected data structure:', data);
                 }
@@ -60,6 +50,7 @@ function Admin() {
                 console.error('Error fetching data:', error);
             });
     }, []);
+    
     
     
     
@@ -74,24 +65,21 @@ function Admin() {
 
     const handleDone = (token) => {
         const orderInCurrent = currentOrders.find(order => order.token === token);
-        const orderInAccepted = acceptedOrders.find(order => order.token === token);
-
+    
         if (orderInCurrent) {
             // Move from Current to Accepted
             setCurrentOrders(currentOrders.filter(order => order.token !== token));
             setAcceptedOrders([...acceptedOrders, orderInCurrent]);
             console.log('Moved order to Accepted:', orderInCurrent);
             // Optionally update backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'PATCH' });
-        } else if (orderInAccepted) {
-            // Move from Accepted to Done
-            setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-            setDoneOrders([...doneOrders, orderInAccepted]);
-            console.log('Moved order to Done:', orderInAccepted);
-            // Optionally update backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/final-orders/${token}`, { method: 'PATCH' });
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'accepted' }), // Update status to 'accepted'
+                headers: { 'Content-Type': 'application/json' }
+            });
         }
     };
+    
 
     const handleDecline = (token) => {
         // Remove the order from Current or Accepted
