@@ -26,9 +26,9 @@ function Login() {
         <div className='outer-container'>
             <div className='inner-container'>
                 <div className='Welcome'>Welcome!</div>
-                <div className='textmsg'>We will send you an <span className='otp'>One Time Password </span> 
+                {/* <div className='textmsg'>We will send you an <span className='otp'>One Time Password </span> 
                     on this mobile number
-                </div>
+                </div> */}
                 <div className='mobile'>Enter your mobile number</div>
                 <div className="input-container">
                     <span>+91 |</span>

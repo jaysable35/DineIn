@@ -11,7 +11,7 @@ function FinalOrder() {
 
     return (
         <div style={{ width: '100%', height: '100vh', position: 'relative', background: '#FCFCF9' }}>
-            <div className="YourPaymentIsSuccessful" style={{ left: 89, top: 277, position: 'absolute', color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word' }}>
+            <div className="YourPaymentIsSuccessful" style={{ left: 65, top: 277, position: 'absolute', color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word' }}>
                 Your Order is placed Successfully
             </div>
             <div className="Group" style={{ width: 134, height: 134, left: 121, top: 48, position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
