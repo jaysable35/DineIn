@@ -15,7 +15,7 @@ const io = new SocketIOServer(server);
 
 // Create a Socket.IO server instance with CORS options
 app.use(cors({
-    origin: "https://www.dinein.live", // The origin of your client application
+    origin: "https://dinein.live", // The origin of your client application
     methods: ["GET", "POST","DELETE","OPTION","PATCH"],
     allowedHeaders: ["Content-Type","Authorization"],
     credentials: true
