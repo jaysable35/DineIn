@@ -14,44 +14,60 @@ socket.on('connect', () => {
 });
 
 function Admin() {
-    const [allOrders, setAllOrders] = useState([]);
     const [currentOrders, setCurrentOrders] = useState([]);
     const [acceptedOrders, setAcceptedOrders] = useState([]);
     const [doneOrders, setDoneOrders] = useState([]);
     const [newOrderToken, setNewOrderToken] = useState(301); // Initialize token counter starting from 301
 
     useEffect(() => {
-        // Fetch orders from the backend without filtering by status
+        // Fetch orders from the backend with categorization
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
-                setAllOrders(data);
-                setCurrentOrders(data); // Initially, consider all orders as current
+                console.log('Fetched data:', data); // Log the fetched data
+                setCurrentOrders(data.currentOrders || []);
+                setAcceptedOrders(data.acceptedOrders || []);
+                setDoneOrders(data.doneOrders || []);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }, []);
 
+    useEffect(() => {
+        console.log('Current Orders:', currentOrders);
+        console.log('Accepted Orders:', acceptedOrders);
+        console.log('Done Orders:', doneOrders);
+    }, [currentOrders, acceptedOrders, doneOrders]);
+
     const handleDone = (token) => {
-        const orderInCurrent = currentOrders.find(order => order.token == token);
-        const orderInAccepted = acceptedOrders.find(order => order.token == token);
+        const orderInCurrent = currentOrders.find(order => order.token === token);
+        const orderInAccepted = acceptedOrders.find(order => order.token === token);
 
         if (orderInCurrent) {
             // Move from Current to Accepted
-            setCurrentOrders(currentOrders.filter(order => order.token != token));
+            setCurrentOrders(currentOrders.filter(order => order.token !== token));
             setAcceptedOrders([...acceptedOrders, orderInCurrent]);
+            console.log('Moved order to Accepted:', orderInCurrent);
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'PATCH' });
         } else if (orderInAccepted) {
             // Move from Accepted to Done
-            setAcceptedOrders(acceptedOrders.filter(order => order.token != token));
+            setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
             setDoneOrders([...doneOrders, orderInAccepted]);
+            console.log('Moved order to Done:', orderInAccepted);
+            // Optionally update backend
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/final-orders/${token}`, { method: 'PATCH' });
         }
     };
 
     const handleDecline = (token) => {
         // Remove the order from Current or Accepted
-        setCurrentOrders(currentOrders.filter(order => order.token != token));
-        setAcceptedOrders(acceptedOrders.filter(order => order.token != token));
+        setCurrentOrders(currentOrders.filter(order => order.token !== token));
+        setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
+        console.log('Declined order:', token);
+        // Optionally update backend
+        fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'DELETE' });
     };
 
     const handleNewOrder = () => {
@@ -61,6 +77,13 @@ function Admin() {
         };
         setCurrentOrders([...currentOrders, newOrder]);
         setNewOrderToken(newOrderToken + 1); // Increment the token for the next new order
+        console.log('Added new order:', newOrder);
+        // Optionally add new order to backend
+        fetch('https://dinein-6bqx.onrender.com/ambika-admin/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOrder)
+        });
     };
 
     return (
