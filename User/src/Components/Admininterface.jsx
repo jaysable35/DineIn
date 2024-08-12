@@ -25,10 +25,28 @@ function Admin() {
             .then(data => {
                 console.log('Fetched data:', data);
 
+                // Check the structure of the fetched data
+                if (!Array.isArray(data)) {
+                    console.error('Expected an array but got:', data);
+                    return;
+                }
+
+                // Check if the orders have a status field
+                data.forEach(order => {
+                    console.log('Order:', order);
+                    if (!order.status) {
+                        console.error('Order missing status field:', order);
+                    }
+                });
+
                 // Categorize orders based on status
                 const current = data.filter(order => order.status === 'current');
                 const accepted = data.filter(order => order.status === 'accepted');
                 const done = data.filter(order => order.status === 'done');
+
+                console.log('Current Orders:', current);
+                console.log('Accepted Orders:', accepted);
+                console.log('Done Orders:', done);
 
                 setCurrentOrders(current);
                 setAcceptedOrders(accepted);
@@ -38,13 +56,6 @@ function Admin() {
                 console.error('Error fetching data:', error);
             });
     }, []);
-
-    useEffect(() => {
-        // Log the state variables when they change
-        console.log('Current Orders:', currentOrders);
-        console.log('Accepted Orders:', acceptedOrders);
-        console.log('Done Orders:', doneOrders);
-    }, [currentOrders, acceptedOrders, doneOrders]);
 
     const handleDone = (token) => {
         const orderInCurrent = currentOrders.find(order => order.token === token);
@@ -149,7 +160,6 @@ function Admin() {
             <div className="Done" style={{ width: 400, height: 'calc(100vh - 104px)', right: 30, top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: '100%', height: 70, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
                 <div className="Accepted0" style={{ left: 170, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done</div>
-
                 {doneOrders.map(order => (
                     <AdminCard
                         key={order.token}
