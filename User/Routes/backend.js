@@ -160,26 +160,31 @@ app.delete('/ambika-admin/orders/:token', async (req, res) => {
 });
 
 app.patch('/ambika-admin/orders/:id', async (req, res) => {
-    const { id } = req.params; // Order ID from the URL
-    const { status } = req.body; // Status from the request body
+    const { id } = req.params; // Extracting the order ID from the URL
+    const { status } = req.body; // Extracting the status from the request body
 
     try {
+        // Check if the status is provided
         if (!status) {
-            return res.status(400).send({ error: 'Status is required' }); // Return 400 if status is missing
+            return res.status(400).send({ error: 'Status is required' });
         }
 
+        // Update the order status in the database
         const updatedOrder = await Order.findByIdAndUpdate(id, { status }, { new: true });
 
+        // If the order is not found, return 404
         if (!updatedOrder) {
-            return res.status(404).send({ error: 'Order not found' }); // Return 404 if order not found
+            return res.status(404).send({ error: 'Order not found' });
         }
 
-        res.send(updatedOrder); // Return the updated order
+        // Send the updated order back in the response
+        res.send(updatedOrder);
     } catch (error) {
-        console.error('Error updating order:', error);
-        res.status(500).send({ error: 'Failed to update order status' }); // Return 500 for any other errors
+        console.error('Error updating order:', error); // Log the error for debugging
+        res.status(500).send({ error: 'Failed to update order status' }); // Return 500 if something goes wrong
     }
 });
+
 
 
 
