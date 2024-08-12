@@ -24,33 +24,17 @@ function Admin() {
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data);
-
-                // Check the structure of the fetched data
-                if (!Array.isArray(data)) {
-                    console.error('Expected an array but got:', data);
-                    return;
-                }
-
-                // Check if the orders have a status field
-                data.forEach(order => {
-                    console.log('Order:', order);
-                    if (!order.status) {
-                        console.error('Order missing status field:', order);
-                    }
-                });
-
-                // Categorize orders based on status
-                const current = data.filter(order => order.status === 'current');
-                const accepted = data.filter(order => order.status === 'accepted');
-                const done = data.filter(order => order.status === 'done');
-
-                console.log('Current Orders:', current);
-                console.log('Accepted Orders:', accepted);
-                console.log('Done Orders:', done);
-
-                setCurrentOrders(current);
-                setAcceptedOrders(accepted);
-                setDoneOrders(done);
+    
+                // Add a default status of 'current' if missing
+                const updatedOrders = data.map(order => ({
+                    ...order,
+                    status: order.status || 'current'
+                }));
+    
+                // Filter orders based on status
+                setCurrentOrders(updatedOrders.filter(order => order.status === 'current'));
+                setAcceptedOrders(updatedOrders.filter(order => order.status === 'accepted'));
+                setDoneOrders(updatedOrders.filter(order => order.status === 'done'));
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -60,58 +44,37 @@ function Admin() {
     const handleDone = (token) => {
         const orderInCurrent = currentOrders.find(order => order.token === token);
         const orderInAccepted = acceptedOrders.find(order => order.token === token);
-
+    
         if (orderInCurrent) {
             // Move from Current to Accepted
             setCurrentOrders(currentOrders.filter(order => order.token !== token));
             setAcceptedOrders([...acceptedOrders, { ...orderInCurrent, status: 'accepted' }]);
-
-            // Update status in backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+            // Update backend status to 'accepted'
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'accepted' }),
                 headers: { 'Content-Type': 'application/json' }
-            }).then(response => response.json())
-                .then(updatedOrder => {
-                    console.log('Order status updated to accepted:', updatedOrder);
-                }).catch(error => {
-                    console.error('Error updating order status:', error);
-                });
-
+            });
         } else if (orderInAccepted) {
             // Move from Accepted to Done
             setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
             setDoneOrders([...doneOrders, { ...orderInAccepted, status: 'done' }]);
-
-            // Update status in backend
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, {
+            // Update backend status to 'done'
+            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
                 method: 'PATCH',
                 body: JSON.stringify({ status: 'done' }),
                 headers: { 'Content-Type': 'application/json' }
-            }).then(response => response.json())
-                .then(updatedOrder => {
-                    console.log('Order status updated to done:', updatedOrder);
-                }).catch(error => {
-                    console.error('Error updating order status:', error);
-                });
+            });
         }
     };
-
+    
     const handleDecline = (token) => {
-        // Remove the order from Current or Accepted
+        // Remove the order from Current or Accepted and update backend
         setCurrentOrders(currentOrders.filter(order => order.token !== token));
         setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-        console.log('Declined order:', token);
-
-        // Optionally update backend
-        fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'DELETE' })
-            .then(() => {
-                console.log('Order declined and deleted from backend');
-            })
-            .catch(error => {
-                console.error('Error deleting order:', error);
-            });
+        fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'DELETE' });
     };
+    
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 30, position: 'relative' }}>
