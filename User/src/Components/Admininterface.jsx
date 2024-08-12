@@ -24,19 +24,26 @@ function Admin() {
             .then(response => response.json())
             .then(data => {
                 console.log('Fetched data:', data);
-                console.log('Current Orders:', data.currentOrders);
-                console.log('Accepted Orders:', data.acceptedOrders);
-                console.log('Done Orders:', data.doneOrders);
-
-                // Ensure that all fetched orders are set to currentOrders
-                setCurrentOrders(data.currentOrders || []);
-                setAcceptedOrders(data.acceptedOrders || []);
-                setDoneOrders(data.doneOrders || []);
+    
+                // Check for the existence of keys and log them
+                const current = data.currentOrders || [];
+                const accepted = data.acceptedOrders || [];
+                const done = data.doneOrders || [];
+    
+                console.log('Current Orders:', current);
+                console.log('Accepted Orders:', accepted);
+                console.log('Done Orders:', done);
+    
+                // Set state with the fetched orders or empty arrays if undefined
+                setCurrentOrders(current);
+                setAcceptedOrders(accepted);
+                setDoneOrders(done);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }, []);
+    
 
     const handleDone = (token) => {
         console.log('Handle Done Clicked:', token);
