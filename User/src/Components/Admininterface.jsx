@@ -41,45 +41,31 @@ function Admin() {
             });
     }, []);
 
-    const handleDone = async (token) => {
+    const handleDone = async (orderId, token) => {
         try {
-            let updatedOrder;
+            const response = await fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${orderId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: 'accepted',
+                    token: Number(token) // Ensure token is a number
+                }),
+            });
     
-            // Check if the order is in the currentOrders column
-            if (currentOrders.some(order => order.token === token)) {
-                // Move the order to acceptedOrders
-                updatedOrder = { ...currentOrders.find(order => order.token === token), status: 'accepted' };
-                setCurrentOrders(currentOrders.filter(order => order.token !== token));
-                setAcceptedOrders([...acceptedOrders, updatedOrder]);
-            } 
-            // Check if the order is in the acceptedOrders column
-            else if (acceptedOrders.some(order => order.token === token)) {
-                // Move the order to doneOrders
-                updatedOrder = { ...acceptedOrders.find(order => order.token === token), status: 'done' };
-                setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-                setDoneOrders([...doneOrders, updatedOrder]);
+            if (!response.ok) {
+                throw new Error('Failed to update the order status on the backend');
             }
     
-            // Send the status update to the backend
-            if (updatedOrder) {
-                const response = await fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${updatedOrder._id}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ status: updatedOrder.status }),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-    
-                if (!response.ok) {
-                    throw new Error('Failed to update the order status on the backend');
-                }
-    
-                console.log('Order status updated successfully:', updatedOrder.status);
-            }
+            // Update the local state or UI accordingly
+            // For example, remove the order from currentOrders and add to acceptedOrders
+            // or trigger a re-fetch to update the UI
         } catch (error) {
             console.error('Error updating order status:', error);
         }
     };
+    
     
     
     const handleDecline = (token) => {
@@ -108,8 +94,8 @@ function Admin() {
                         key={order.token}
                         token={order.token}
                         items={order.items}
-                        onDone={() => handleDone(order.token)}
-                        onDecline={() => handleDecline(order.token)}
+                        onDone={handleDone}
+                        onDecline={handleDecline}
                         showDoneButton={true}
                         showDeclineButton={true}
                     />

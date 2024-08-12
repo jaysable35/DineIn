@@ -2,14 +2,19 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 
 function AdminCard({ token, items, onDone, onDecline, showDoneButton, showDeclineButton }) {
-    // Calculate the total price of the items
     const safeItems = Array.isArray(items) ? items : [];
-
     const total = safeItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+
+    const handleDoneClick = () => {
+        // Call the onDone function with token
+        if (onDone) {
+            onDone(token);
+        }
+    };
+
     return (
         <Card className="admin-card" style={{ width: 366, height: 300, background: 'white', borderRadius: 16, position: 'relative', top: 100, left: 20, marginBottom: 10 }}>
             <Card.Body style={{ padding: '20px' }}>
-               
                 <Card.Title>Token No.{token}</Card.Title>
                 <Card.Subtitle>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -37,7 +42,7 @@ function AdminCard({ token, items, onDone, onDecline, showDoneButton, showDeclin
                     <span style={{ fontWeight: 'bold' }}>{total}</span>
                 </div>
                 {showDoneButton && (
-                    <button onClick={onDone} style={{ backgroundColor: 'green', color: 'white', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Done</button>
+                    <button onClick={handleDoneClick} style={{ backgroundColor: 'green', color: 'white', padding: '5px 10px', borderRadius: 5, marginRight: 5 }}>Done</button>
                 )}
                 {showDeclineButton && (
                     <button onClick={onDecline} style={{ backgroundColor: 'red', color: 'white', padding: '5px 10px', borderRadius: 5 }}>Decline</button>
