@@ -41,30 +41,45 @@ function Admin() {
             });
     }, []);
 
-    const handleDone = async (orderId, token) => {
+    const handleDone = async (orderId) => {
         try {
             const response = await fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${orderId}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    status: 'accepted',
-                    token: Number(token) // Ensure token is a number
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'accepted' })
             });
     
-            if (!response.ok) {
-                throw new Error('Failed to update the order status on the backend');
-            }
+            if (response.ok) {
+                // Assuming you have a function to refresh or update your orders list
+                // For example, you could call a function to fetch the updated list of orders
+                refreshOrders();
     
-            // Update the local state or UI accordingly
-            // For example, remove the order from currentOrders and add to acceptedOrders
-            // or trigger a re-fetch to update the UI
+                // Optionally, provide user feedback
+                alert('Order successfully moved to accepted orders.');
+            } else {
+                console.error('Failed to move order to acceptedOrders');
+            }
         } catch (error) {
-            console.error('Error updating order status:', error);
+            console.error('Error:', error);
         }
     };
+    
+    // Function to refresh or update the list of orders
+    const refreshOrders = async () => {
+        try {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/orders');
+            if (response.ok) {
+                const orders = await response.json();
+                // Update your state with the fetched orders
+                setOrders(orders); // Assuming setOrders is your state updater function
+            } else {
+                console.error('Failed to fetch orders');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+    
     
     
     

@@ -160,30 +160,55 @@ app.delete('/ambika-admin/orders/:token', async (req, res) => {
 });
 
 app.patch('/ambika-admin/orders/:id', async (req, res) => {
-    const { id } = req.params; // Extracting the order ID from the URL
-    const { status } = req.body; // Extracting the status from the request body
+    const { id } = req.params;
+    const { status } = req.body;
 
     try {
-        // Check if the status is provided
-        if (!status) {
-            return res.status(400).send({ error: 'Status is required' });
+        if (status === 'accepted') {
+            // Fetch the order from the `orders` collection
+            const order = await Order.findById(id);
+
+            // Remove the order from the `orders` collection
+            await Order.findByIdAndDelete(id);
+
+            // Save the order to the `acceptedOrders` collection
+            const acceptedOrder = new AcceptedOrder(order.toObject());
+            await acceptedOrder.save();
+
+            res.send({ message: 'Order moved to acceptedOrders' });
+        } else {
+            res.status(400).send({ error: 'Invalid status' });
         }
-
-        // Update the order status in the database
-        const updatedOrder = await Order.findByIdAndUpdate(id, { status }, { new: true });
-
-        // If the order is not found, return 404
-        if (!updatedOrder) {
-            return res.status(404).send({ error: 'Order not found' });
-        }
-
-        // Send the updated order back in the response
-        res.send(updatedOrder);
     } catch (error) {
-        console.error('Error updating order:', error); // Log the error for debugging
-        res.status(500).send({ error: 'Failed to update order status' }); // Return 500 if something goes wrong
+        res.status(500).send({ error: 'Error updating order status' });
     }
 });
+
+app.patch('/ambika-admin/accepted-orders/:id', async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        if (status === 'done') {
+            // Fetch the order from the `acceptedOrders` collection
+            const order = await AcceptedOrder.findById(id);
+
+            // Remove the order from the `acceptedOrders` collection
+            await AcceptedOrder.findByIdAndDelete(id);
+
+            // Save the order to the `finalOrders` collection
+            const finalOrder = new FinalOrder(order.toObject());
+            await finalOrder.save();
+
+            res.send({ message: 'Order moved to finalOrders' });
+        } else {
+            res.status(400).send({ error: 'Invalid status' });
+        }
+    } catch (error) {
+        res.status(500).send({ error: 'Error updating order status' });
+    }
+});
+
 
 
 

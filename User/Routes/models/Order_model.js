@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 import Counter from './Counter.js';
 
-const userOrdersSchema = new mongoose.Schema({
+// Base schema for orders
+const orderBaseSchema = new mongoose.Schema({
     orderId: { type: String, required: true },
     items: [{ 
         id: Number, 
@@ -14,8 +15,12 @@ const userOrdersSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now }
 });
 
+// Schema for current orders
+const userOrdersSchema = new mongoose.Schema({
+    ...orderBaseSchema.obj, // Use the base schema fields
+});
 
-
+// Pre-save hook to handle token generation
 userOrdersSchema.pre('save', async function(next) {
     if (!this.isNew) return next();
 
@@ -25,9 +30,23 @@ userOrdersSchema.pre('save', async function(next) {
         { new: true, upsert: true }
     );
 
-    this.tokenNumber = counter.seq;
+    this.token = counter.seq; // Use the correct field name here
     next();
 });
 
-const Order = mongoose.model("Order", userOrdersSchema);
-export default Order;
+// Schema for accepted orders
+const acceptedOrderSchema = new mongoose.Schema({
+    ...orderBaseSchema.obj, // Use the base schema fields
+});
+
+// Schema for final orders
+const finalOrderSchema = new mongoose.Schema({
+    ...orderBaseSchema.obj, // Use the base schema fields
+});
+
+// Models
+const Order = mongoose.model('Order', userOrdersSchema);
+const AcceptedOrder = mongoose.model('AcceptedOrder', acceptedOrderSchema);
+const FinalOrder = mongoose.model('FinalOrder', finalOrderSchema);
+
+export { Order, AcceptedOrder, FinalOrder };
