@@ -49,4 +49,4 @@ const Order = mongoose.model('Order', userOrdersSchema);
 const AcceptedOrder = mongoose.model('AcceptedOrder', acceptedOrderSchema);
 const FinalOrder = mongoose.model('FinalOrder', finalOrderSchema);
 
-export { Order, AcceptedOrder, FinalOrder };
+export default { Order, AcceptedOrder, FinalOrder };
