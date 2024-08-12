@@ -41,32 +41,46 @@ function Admin() {
             });
     }, []);
 
-    const handleDone = (token) => {
-        const orderInCurrent = currentOrders.find(order => order.token === token);
-        const orderInAccepted = acceptedOrders.find(order => order.token === token);
+    const handleDone = async (token) => {
+        try {
+            let updatedOrder;
     
-        if (orderInCurrent) {
-            // Move from Current to Accepted
-            setCurrentOrders(currentOrders.filter(order => order.token !== token));
-            setAcceptedOrders([...acceptedOrders, { ...orderInCurrent, status: 'accepted' }]);
-            // Update backend status to 'accepted'
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
-                method: 'PATCH',
-                body: JSON.stringify({ status: 'accepted' }),
-                headers: { 'Content-Type': 'application/json' }
-            });
-        } else if (orderInAccepted) {
-            // Move from Accepted to Done
-            setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-            setDoneOrders([...doneOrders, { ...orderInAccepted, status: 'done' }]);
-            // Update backend status to 'done'
-            fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { 
-                method: 'PATCH',
-                body: JSON.stringify({ status: 'done' }),
-                headers: { 'Content-Type': 'application/json' }
-            });
+            // Check if the order is in the currentOrders column
+            if (currentOrders.some(order => order.token === token)) {
+                // Move the order to acceptedOrders
+                updatedOrder = { ...currentOrders.find(order => order.token === token), status: 'accepted' };
+                setCurrentOrders(currentOrders.filter(order => order.token !== token));
+                setAcceptedOrders([...acceptedOrders, updatedOrder]);
+            } 
+            // Check if the order is in the acceptedOrders column
+            else if (acceptedOrders.some(order => order.token === token)) {
+                // Move the order to doneOrders
+                updatedOrder = { ...acceptedOrders.find(order => order.token === token), status: 'done' };
+                setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
+                setDoneOrders([...doneOrders, updatedOrder]);
+            }
+    
+            // Send the status update to the backend
+            if (updatedOrder) {
+                const response = await fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${updatedOrder._id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: updatedOrder.status }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to update the order status on the backend');
+                }
+    
+                console.log('Order status updated successfully:', updatedOrder.status);
+            }
+        } catch (error) {
+            console.error('Error updating order status:', error);
         }
     };
+    
     
     const handleDecline = (token) => {
         // Remove the order from Current or Accepted and update backend

@@ -159,6 +159,24 @@ app.delete('/ambika-admin/orders/:token', async (req, res) => {
     }
 });
 
+app.patch('/ambika-admin/orders/:id', async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        const updatedOrder = await Order.findByIdAndUpdate(id, { status }, { new: true });
+
+        if (!updatedOrder) {
+            return res.status(404).send({ error: 'Order not found' });
+        }
+
+        res.send(updatedOrder);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to update order status' });
+    }
+});
+
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
