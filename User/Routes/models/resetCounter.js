@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Counter from './Counter'; // Adjust the path to your Counter model
 import cron from 'node-cron';
+import Counter from './Counter.js'; // Adjust the path to your Counter model
 
 // Connect to MongoDB
 mongoose.connect('mongodb://your_mongodb_uri', {
@@ -9,6 +9,7 @@ mongoose.connect('mongodb://your_mongodb_uri', {
 }).then(() => console.log('DB Connected'))
   .catch(err => console.log('MongoDB Connection Error:', err));
 
+// Function to reset the counter
 const resetCounter = async (counterId) => {
     try {
         const result = await Counter.findByIdAndUpdate(
@@ -28,7 +29,7 @@ const resetCounter = async (counterId) => {
 };
 
 // Schedule the counter reset to run at midnight every day
-cron.schedule('40 14 * * *', () => {
+cron.schedule('00 15 * * *', () => {
     console.log('Resetting counter...');
     resetCounter('orderCounter'); // Replace 'orderCounter' with the actual _id of your counter document
 });
