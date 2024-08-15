@@ -3,6 +3,7 @@ import '../Components/admin.css';
 import AdminCard from "./admincard";
 import logo from '../assets/dinein.png';
 import io from "socket.io-client";
+import dotenv from 'dotenv'
 
 const socket = io('https://dinein-1.onrender.com', {
     transports: ['websocket', 'polling'],
@@ -17,79 +18,131 @@ function Admin() {
     const [currentOrders, setCurrentOrders] = useState([]);
     const [acceptedOrders, setAcceptedOrders] = useState([]);
     const [doneOrders, setDoneOrders] = useState([]);
+    const [orderId,setOrderId]=useState("");
 
     // Fetch orders on component mount
     useEffect(() => {
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')
             .then(response => response.json())
             .then(data => {
-                console.log('Fetched data:', data);
+                // Separate orders based on status
+                const currentOrders = data.filter(order => order.status === 'current');
+                setCurrentOrders(currentOrders);
+                console.log("current orders:", currentOrders);
     
-                // Add a default status of 'current' if missing
-                const updatedOrders = data.map(order => ({
-                    ...order,
-                    status: order.status || 'current'
-                }));
+                const acceptedOrders = data.filter(order => order.status === 'accepted');
+                setAcceptedOrders(acceptedOrders);
+                console.log("accepted orders:", acceptedOrders);
     
-                // Filter orders based on status
-                setCurrentOrders(updatedOrders.filter(order => order.status === 'current'));
-                setAcceptedOrders(updatedOrders.filter(order => order.status === 'accepted'));
-                setDoneOrders(updatedOrders.filter(order => order.status === 'done'));
+                const doneOrders = data.filter(order => order.status === 'done');
+                setDoneOrders(doneOrders);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }, []);
+    
 
-    const handleDone = async (orderId) => {
+    const handleDone = async (Id, currentStatus) => {
         try {
-            const response = await fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${orderId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'accepted' })
+            const nextStatus = currentStatus === 'current' ? 'accepted' : 'done';
+            
+            // Make a POST request to the backend with the Id and status
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    status: nextStatus,
+                    id: Id,
+                }),
             });
     
-            if (response.ok) {
-                // Assuming you have a function to refresh or update your orders list
-                // For example, you could call a function to fetch the updated list of orders
-                refreshOrders();
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to update order status');
+            }
     
-                // Optionally, provide user feedback
-                alert('Order successfully moved to accepted orders.');
+            console.log(`Order moved to ${nextStatus}Orders:`, result);
+    
+            // Update the state based on the nextStatus
+            if (nextStatus === 'accepted') {
+                setAcceptedOrders(prevOrders => [...prevOrders, result.acceptedOrder]);
+                setCurrentOrders(prevOrders => prevOrders.filter(order => order._id !== Id));
+            } else if (nextStatus === 'done') {
+                setDoneOrders(prevOrders => [result.doneOrder, ...prevOrders]);
+                setAcceptedOrders(prevOrders => prevOrders.filter(order => order._id !== Id));
+            }
+        } catch (error) {
+            console.error('Error updating order status:', error.message);
+        }
+    };
+    
+    
+    
+
+    const fetchOrders = async () => {
+        try {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard');
+            const data = await response.json();
+    
+            // Filter orders based on their status
+            const currentOrders = data.filter(order => order.status === 'current');
+            const acceptedOrders = data.filter(order => order.status === 'accepted');
+            const doneOrders = data.filter(order => order.status === 'done');
+    
+            setCurrentOrders(currentOrders);
+            setAcceptedOrders(acceptedOrders);
+            setDoneOrders(doneOrders);
+        } catch (error) {
+            console.error('Error fetching orders:', error.message);
+        }
+    };
+    
+    
+    const handleDecline = (token) => {
+        // Remove the order from Current or Accepted and update backend
+        // setCurrentOrders(currentOrders.filter(order => order.token !== token));
+        // setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
+        fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', { method: 'DELETE' });
+    };
+    
+    console.log(currentOrders)
+
+    const handleIndex = async (index) => {
+        // Remove the order from the currentOrders array
+        try {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'accepted', id: orderId })
+            });            
+    
+            if (response.ok) {
+                // refreshOrders();
+                const data = currentOrders.filter((_, i) => i !== index);
+                setCurrentOrders(data);
+            
+                // Find the order that should be moved to acceptedOrders
+                const acceptedData = currentOrders.find((_, i) => i === index);
+                
+                // Add the found order to the acceptedOrders array
+                setAcceptedOrders((prev) => [...prev, acceptedData]);
+            
+                console.log("Current Orders:", data);
+                console.log("Accepted Order:", acceptedData);
             } else {
                 console.error('Failed to move order to acceptedOrders');
             }
         } catch (error) {
             console.error('Error:', error);
         }
+
+       
     };
     
-    // Function to refresh or update the list of orders
-    const refreshOrders = async () => {
-        try {
-            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/orders');
-            if (response.ok) {
-                const orders = await response.json();
-                // Update your state with the fetched orders
-                setOrders(orders); // Assuming setOrders is your state updater function
-            } else {
-                console.error('Failed to fetch orders');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
-    
-    
-    
-    
-    const handleDecline = (token) => {
-        // Remove the order from Current or Accepted and update backend
-        setCurrentOrders(currentOrders.filter(order => order.token !== token));
-        setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-        fetch(`https://dinein-6bqx.onrender.com/ambika-admin/orders/${token}`, { method: 'DELETE' });
-    };
-    
+
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 30, position: 'relative' }}>
@@ -104,12 +157,16 @@ function Admin() {
             <div className="Current_order" style={{ width: 400, height: 'calc(100vh - 104px)', left: 30, top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: 400, height: 70, left: 1, top: 1, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
                 <div className="Accepted0" style={{ left: 100, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Current Orders</div>
-                {currentOrders.map(order => (
+                {currentOrders.map((order,index) => (
                     <AdminCard
-                        key={order.token}
+                        key={index}
                         token={order.token}
+                        id={order._id}
+                        onIndex={handleIndex}
+                        index={index}
+
                         items={order.items}
-                        onDone={handleDone}
+                        onDone={() => handleDone(order._id,'current')}
                         onDecline={handleDecline}
                         showDoneButton={true}
                         showDeclineButton={true}
@@ -121,15 +178,18 @@ function Admin() {
             <div className="Accepted" style={{ width: 400, height: 'calc(100vh - 104px)', top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: '100%', height: 70, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
                 <div className="Accepted0" style={{ left: 120, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Accepted</div>
-                {acceptedOrders.map(order => (
+                {acceptedOrders.map((order,index) => (
                     <AdminCard
-                        key={order.token}
-                        token={order.token}
-                        items={order.items}
-                        onDone={() => handleDone(order.token)}
-                        onDecline={() => handleDecline(order.token)}
-                        showDoneButton={true}
-                        showDeclineButton={true}
+                    key={index}
+                    token={order.token}
+                    id={order._id}
+                    onIndex={handleIndex}
+                    index={index}
+                    items={order.items}
+                    onDone={() => handleDone(order._id,'accepted')}
+                    onDecline={handleDecline}
+                    showDoneButton={true}
+                    showDeclineButton={true}
                     />
                 ))}
             </div>
@@ -138,13 +198,19 @@ function Admin() {
             <div className="Done" style={{ width: 400, height: 'calc(100vh - 104px)', right: 30, top: 104, position: 'absolute', background: '#EDECE9', borderRadius: 30, overflowY: 'auto', paddingBottom: 20 }}>
                 <div className="grey box" style={{ width: '100%', height: 70, position: 'absolute', background: '#DDDBD3', borderTopLeftRadius: 30, borderTopRightRadius: 30 }} />
                 <div className="Accepted0" style={{ left: 170, top: 20, position: 'absolute', textAlign: 'center', color: '#0D0F11', fontSize: 30, fontFamily: 'Inter', fontWeight: 'bolder', wordWrap: 'break-word' }}>Done</div>
-                {doneOrders.map(order => (
+                {doneOrders.map((order,index) => (
                     <AdminCard
-                        key={order.token}
-                        token={order.token}
-                        items={order.items}
-                        showDoneButton={false}
-                        showDeclineButton={false}
+
+                    key={index}
+                    token={order.token}
+                    id={order._id}
+                    onIndex={handleIndex}
+                    index={index}
+                    items={order.items}
+                    onDone={handleDone}
+                    onDecline={handleDecline}
+                    showDoneButton={false}
+                    showDeclineButton={false}
                     />
                 ))}
             </div>
