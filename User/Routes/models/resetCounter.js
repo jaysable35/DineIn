@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import cron from 'node-cron';
 import Counter from './Counter.js'; // Adjust the path to your Counter model
+import dotenv from 'dotenv';
 
 // Connect to MongoDB
-mongoose.connect('mongodb://your_mongodb_uri', {
+mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log('DB Connected'))
