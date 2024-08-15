@@ -28,7 +28,7 @@ const resetCounter = async (counterId) => {
 };
 
 // Schedule the counter reset to run at midnight every day
-cron.schedule('20 10 * * *', () => {
+cron.schedule('40 14 * * *', () => {
     console.log('Resetting counter...');
     resetCounter('orderCounter'); // Replace 'orderCounter' with the actual _id of your counter document
 });
