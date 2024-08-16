@@ -17,7 +17,7 @@ const Kart = ({ cart, updateCart }) => {
 
       
     try {
-        const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+        const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
