@@ -38,41 +38,56 @@ mongoose.connect(process.env.MONGO_URL)
 app.options('*', cors());
 
 app.use(express.json());
-
  //route for sending the order from the user
+ // Place order route
 app.post('/ambika/user/cart', async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
-        // Update the order counter
+        const { cart, total } = req.body;
+
+        if (!cart || cart.length === 0) {
+            return res.status(400).json({ message: 'Cart is empty or undefined' });
+        }
+
+        // Increment the counter and get the new token number
         const counter = await Counter.findByIdAndUpdate(
-            { _id: 'orderCounter' },
+            'orderCounter',
             { $inc: { seq: 1 } },
-            { new: true, upsert: true }
+            { new: true, upsert: true, session }
         );
 
-        // Generate the token number
-        const token = counter.seq;
-        const { cart, total } = req.body;
-        console.log("cart_is:",cart)
+        const tokenNum = counter.seq;
+
         // Create a new order
         const order = new Order({
             items: cart,
             total,
-            token
+            token: tokenNum
         });
-        console.log("order_is:",order)
-        await order.save();
+        await order.save({ session });
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
 
         // Send a success response
         res.status(200).json({
             message: 'Order placed successfully',
-            token
+            token: tokenNum // Make sure the token number is returned correctly
         });
 
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
         console.error('Error placing order:', error);
         res.status(500).json({ message: 'Error placing order', error: error.message });
     }
 });
+
+
 
 
 // Route to fetch all orders based on status 
@@ -132,25 +147,23 @@ app.get('/ambika-admin/dashboard', async (req, res) => {
 
 // Delete an order
 app.delete('/ambika-admin/dashboard', async (req, res) => {
-    const { token } = req.params;
-
+    const { id } = req.body; // Get ID from the request body
+    console.log("body is:",req.body)
     try {
-        // Find and delete the order by token
-        const deletedOrder = await Order.findOneAndDelete({ token });
-
-        if (!deletedOrder) {
-            return res.status(404).json({ message: 'Order not found' });
+        const result = await Order.findByIdAndDelete(id) || await AcceptedOrder.findByIdAndDelete(id);
+        if (!result) {
+            return res.status(404).json({ error: 'Order not found' });
         }
-
-        res.status(200).json({
-            message: 'Order deleted successfully',
-            order: deletedOrder
-        });
+        res.status(200).json({ message: 'Order deleted successfully' });
     } catch (error) {
         console.error('Error deleting order:', error);
-        res.status(500).json({ message: 'Error deleting order', error: error.message });
+        res.status(500).json({ error: 'Failed to delete order' });
     }
 });
+
+
+
+
 
 app.post('/ambika-admin/dashboard', async (req, res) => {
     const { status, id: _id } = req.body;

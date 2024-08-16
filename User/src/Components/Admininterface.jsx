@@ -5,7 +5,7 @@ import logo from '../assets/dinein.png';
 import io from "socket.io-client";
 import dotenv from 'dotenv'
 
-const socket = io('https://dinein-1.onrender.com', {
+const socket = io(import.meta.env.VITE_LOCAL, {
     transports: ['websocket', 'polling'],
     withCredentials: true
 });
@@ -101,14 +101,53 @@ function Admin() {
     };
     
     
-    const handleDecline = (token) => {
-        // Remove the order from Current or Accepted and update backend
-        // setCurrentOrders(currentOrders.filter(order => order.token !== token));
-        // setAcceptedOrders(acceptedOrders.filter(order => order.token !== token));
-        fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', { method: 'DELETE' });
-    };
+    const handleDecline = async (id) => {
+        try {
+            // Make a DELETE request to remove the order from the backend
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id }), 
+            });
     
-    console.log(currentOrders)
+            if (!response.ok) {
+                throw new Error('Failed to delete order');
+            }
+    
+            // Remove the order from the frontend state
+            setCurrentOrders(prevOrders => prevOrders.filter(order => order._id !== id));
+    
+            console.log('Order declined:', id);
+        } catch (error) {
+            console.error('Error deleting order:', error.message);
+        }
+    };
+
+    const acceptDecline = async (id) => {
+        try {
+            // Make a DELETE request to remove the order from the backend
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id }), 
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to delete order');
+            }
+    
+            // Remove the order from the frontend state
+            setAcceptedOrders(prevOrders => prevOrders.filter(order => order._id !== id));
+    
+            console.log('Order declined:', id);
+        } catch (error) {
+            console.error('Error deleting order:', error.message);
+        }
+    };
 
     const handleIndex = async (index) => {
         // Remove the order from the currentOrders array
@@ -167,7 +206,7 @@ function Admin() {
 
                         items={order.items}
                         onDone={() => handleDone(order._id,'current')}
-                        onDecline={handleDecline}
+                        onDecline={() => handleDecline(order._id)} 
                         showDoneButton={true}
                         showDeclineButton={true}
                     />
@@ -187,7 +226,7 @@ function Admin() {
                     index={index}
                     items={order.items}
                     onDone={() => handleDone(order._id,'accepted')}
-                    onDecline={handleDecline}
+                    onDecline={() => acceptDecline(order._id)} 
                     showDoneButton={true}
                     showDeclineButton={true}
                     />
@@ -214,6 +253,8 @@ function Admin() {
                     />
                 ))}
             </div>
+
+            {/* Offline Orders */}
         </div>
     );
 }

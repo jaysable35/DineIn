@@ -15,35 +15,36 @@ const Kart = ({ cart, updateCart }) => {
     const handlePlaceOrder = async () => {
         setLoading(true); // Activate the preloader
 
-        try {
-            const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    cart,
-                    total: getTotal()
-                }),
-            });
+      
+    try {
+        const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cart,
+                total: getTotal()
+            }),
+        });
 
-            if (!response.ok) {
-                throw new Error('Failed to place order');
-            }
-
-            const result = await response.json();
-            console.log('Order placed successfully:', result);
-            setToken(result.token);
-            setOrderPlaced(true);
-
-            // Navigate to the FinalOrder page with the token number
-            navigate('/ambika/user/cart/placedorder', { state: { token: result.token, cart: cart } });
-        } catch (error) {
-            console.error('Error placing order:', error);
-            // Optionally show an error message to the user
-        } finally {
-            setLoading(false); // Deactivate the preloader
+        if (!response.ok) {
+            throw new Error('Failed to place order');
         }
+
+        const result = await response.json();
+        console.log('Order placed successfully:', result);
+        setToken(result.token); // Save the token for the user
+
+        // Navigate to the FinalOrder page with the token number
+        navigate('/ambika/user/cart/placedorder', { state: { token: result.token, cart: cart } });
+    } catch (error) {
+        console.error('Error placing order:', error);
+        // Optionally show an error message to the user
+    } finally {
+        setLoading(false); // Deactivate the preloader
+    }
+
     };
 
     const handleAddClick = (item) => {

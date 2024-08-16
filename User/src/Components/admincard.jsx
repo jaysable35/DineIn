@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 
-function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDoneButton, showDeclineButton }) {
+function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDoneButton, showDeclineButton, }) {
     const safeItems = Array.isArray(items) ? items : [];
     const total = safeItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
