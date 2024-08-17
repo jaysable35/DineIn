@@ -15,7 +15,6 @@ const Kart = ({ cart, updateCart }) => {
 
     const handlePlaceOrder = async () => {
         setLoading(true); // Activate the preloader
-
         try {
             const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
                 method: 'POST',

@@ -18,7 +18,6 @@ function Admin() {
     const [acceptedOrders, setAcceptedOrders] = useState([]);
     const [doneOrders, setDoneOrders] = useState([]);
     const [orderId,setOrderId]=useState("");
-
     // Fetch orders on component mount
     useEffect(() => {
         fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard')

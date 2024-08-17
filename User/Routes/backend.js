@@ -85,10 +85,6 @@ app.use(express.json());
 });
 
 
-
-
-
-// Route to fetch all orders based on status 
 app.get('/ambika-admin/dashboard', async (req, res) => {
     try {
         const currentOrders = await Order.find();
