@@ -4,7 +4,7 @@ import Counter from './Counter.js'; // Adjust the path to your Counter model
 import dotenv from 'dotenv';
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL, {
+mongoose.connect(process.env.MONGO_UL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log('DB Connected'))
