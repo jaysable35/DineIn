@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
     });
 });
 
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_UL)
     .then(() => console.log("DB Connected"))
     .catch(err => console.log('MongoDB Connection Error:', err));
 
