@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 
-function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDoneButton, showDeclineButton, }) {
+function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDoneButton, showDeclineButton }) {
     const safeItems = Array.isArray(items) ? items : [];
     const total = safeItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
@@ -32,7 +32,11 @@ function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDo
                 <div className="admin-card-items" style={{ marginTop: 10 }}>
                     {safeItems.map((item, index) => (
                         <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                            <span style={{ flex: 2 }}>{item.name}</span>
+                            <div style={{ flex: 2 }}>
+                                {console.log("Item:", item)} {/* Debugging line */}
+                                <span>{item.name_marathi}</span><br />
+                                <span>{item.name} {item.parcel && <span style={{ color: 'green', fontWeight: 'bold' }}>Parcel</span>}</span>
+                            </div>
                             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
                                 <span style={{ flex: 1, textAlign: 'right' }}>{item.quantity}</span>
                                 <span style={{ flex: 1, textAlign: 'right' }}>{item.price}</span>
@@ -46,14 +50,13 @@ function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDo
                     <span style={{ fontWeight: 'bold' }}>{total}</span>
                 </div>
                 <div style={{display:'flex',justifyContent:'space-between',marginTop:60}}>
-                {showDeclineButton && (
-                    <button onClick={onDecline} style={{ height:60,width:186, backgroundColor: 'white',fontSize:23, fontFamily:'Inter', color: 'black', padding: '5px 10px', borderRadius: 5, marginRight: 5,border:'1px solid black'}}>Decline</button>
-                )}
-                {showDoneButton && (
-                    <button onClick={() => handleDoneClick(index)} style={{ height:60,width:186, backgroundColor: '#31B475',fontSize:23, fontFamily:'Inter', color: 'white', padding: '5px 10px', borderRadius:5,border:'1px solid #31B475'}}>Done</button>
-                )}
+                    {showDeclineButton && (
+                        <button onClick={onDecline} style={{ height:60,width:186, backgroundColor: 'white',fontSize:23, fontFamily:'Inter', color: 'black', padding: '5px 10px', borderRadius: 5, marginRight: 5,border:'1px solid black'}}>Decline</button>
+                    )}
+                    {showDoneButton && (
+                        <button onClick={() => handleDoneClick(index)} style={{ height:60,width:186, backgroundColor: '#31B475',fontSize:23, fontFamily:'Inter', color: 'white', padding: '5px 10px', borderRadius:5,border:'1px solid #31B475'}}>Done</button>
+                    )}
                 </div>
-
             </Card.Body>
         </Card>
     );

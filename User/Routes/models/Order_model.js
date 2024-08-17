@@ -6,10 +6,13 @@ const userOrdersSchema = new mongoose.Schema({
         id: Number, 
         name: String, 
         price: Number, 
-        quantity: Number 
+        quantity: Number,
+         parcel: { type: Boolean, default: false }
     }],
     total: { type: Number, required: true },
     token: { type: Number, required: true },
+    parcel: { type: Boolean, default: false }
+
 });
 
 const acceptedOrderSchema= new mongoose.Schema({
@@ -17,10 +20,14 @@ const acceptedOrderSchema= new mongoose.Schema({
         id:Number,
         name:String,
         price:Number,
-        quantity:Number
+        quantity:Number,
+         parcel: { type: Boolean, default: false }
+
+        
     }],
     total: { type: Number, required: true },
     token: { type: Number, required: true },
+    parcel: { type: Boolean, default: false }
 })
 
 const doneOrderSchema= new mongoose.Schema({
@@ -28,11 +35,22 @@ const doneOrderSchema= new mongoose.Schema({
         id:Number,
         name:String,
         price:Number,
-        quantity:Number
+        quantity:Number,
+         parcel: { type: Boolean, default: false }
+
     }],
     total: { type: Number, required: true },
     token: { type: Number, required: true },
+    parcel: { type: Boolean, default: false }
 },{ timestamps: true })
+
+const newOrderTokenSchema = new mongoose.Schema({
+    token: {
+        type: Number,
+        required: true,
+        default: 301, // Start the sequence from 301
+    },
+});
 
 
 userOrdersSchema.pre('save', async function(next) {
@@ -52,5 +70,6 @@ userOrdersSchema.pre('save', async function(next) {
 const Order = mongoose.model("Order", userOrdersSchema);
 const AcceptedOrder=mongoose.model("AcceptedOrder",acceptedOrderSchema);
 const DoneOrder=mongoose.model("DoneOrder",doneOrderSchema);
+const NewOrderToken = mongoose.model('NewOrderToken', newOrderTokenSchema);
 
-export {Order,AcceptedOrder,DoneOrder};
+export {Order,AcceptedOrder,DoneOrder,NewOrderToken};

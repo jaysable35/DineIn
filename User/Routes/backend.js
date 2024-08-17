@@ -40,7 +40,7 @@ app.options('*', cors());
 app.use(express.json());
  //route for sending the order from the user
  // Place order route
-app.post('/ambika/user/cart', async (req, res) => {
+ app.post('/ambika/user/cart', async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -51,7 +51,6 @@ app.post('/ambika/user/cart', async (req, res) => {
             return res.status(400).json({ message: 'Cart is empty or undefined' });
         }
 
-        // Increment the counter and get the new token number
         const counter = await Counter.findByIdAndUpdate(
             'orderCounter',
             { $inc: { seq: 1 } },
@@ -60,22 +59,20 @@ app.post('/ambika/user/cart', async (req, res) => {
 
         const tokenNum = counter.seq;
 
-        // Create a new order
         const order = new Order({
             items: cart,
             total,
-            token: tokenNum
+            token: tokenNum,
+            parcel: cart.some(item => item.parcel) // Check if any item has parcel
         });
         await order.save({ session });
 
-        // Commit the transaction
         await session.commitTransaction();
         session.endSession();
 
-        // Send a success response
         res.status(200).json({
             message: 'Order placed successfully',
-            token: tokenNum // Make sure the token number is returned correctly
+            token: tokenNum
         });
 
     } catch (error) {
@@ -90,19 +87,18 @@ app.post('/ambika/user/cart', async (req, res) => {
 
 
 
+
 // Route to fetch all orders based on status 
 app.get('/ambika-admin/dashboard', async (req, res) => {
     try {
-        // Fetch orders from Order, AcceptedOrder, and DoneOrder models
         const currentOrders = await Order.find();
         const acceptedOrders = await AcceptedOrder.find();
-        const doneOrders = await DoneOrder.find().sort({ createdAt: -1 }); // Sort by creation date in descending order
+        const doneOrders = await DoneOrder.find().sort({ createdAt: -1 });
 
-        // Combine them into one response with a status field
         const orders = [
-            ...currentOrders.map(order => ({ ...order.toObject(), status: 'current' })),
-            ...acceptedOrders.map(order => ({ ...order.toObject(), status: 'accepted' })),
-            ...doneOrders.map(order => ({ ...order.toObject(), status: 'done' }))
+            ...currentOrders.map(order => ({ ...order.toObject(), status: 'current', parcel: order.parcel })),
+            ...acceptedOrders.map(order => ({ ...order.toObject(), status: 'accepted', parcel: order.parcel })),
+            ...doneOrders.map(order => ({ ...order.toObject(), status: 'done', parcel: order.parcel }))
         ];
 
         res.status(200).json(orders);
@@ -111,6 +107,7 @@ app.get('/ambika-admin/dashboard', async (req, res) => {
         res.status(500).json({ message: 'Error fetching orders', error: error.message });
     }
 });
+
 
 
 

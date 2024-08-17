@@ -3,7 +3,6 @@ import '../Components/admin.css';
 import AdminCard from "./admincard";
 import logo from '../assets/dinein.png';
 import io from "socket.io-client";
-import dotenv from 'dotenv'
 
 const socket = io(import.meta.env.VITE_LOCAL, {
     transports: ['websocket', 'polling'],
@@ -181,7 +180,28 @@ function Admin() {
        
     };
     
-
+    const handleNewOrder = async () => {
+        try {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: 'new' }), // Indicate that this is a request to create a new order
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create order');
+            }
+    
+            const data = await response.json();
+            console.log('New order created:', data.newOrder);
+        } catch (error) {
+            console.error('Error creating order:', error.message);
+        }
+    };
+    
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 30, position: 'relative' }}>
@@ -255,6 +275,9 @@ function Admin() {
             </div>
 
             {/* Offline Orders */}
+            {/* <div className="NewOrder" style={{display:'flex',justifyContent:'center',position:'absolute',top:800,right:90}}>
+                <button onClick={handleNewOrder} style={{height:80,width:200,background:'#31B475',borderRadius:20,fontFamily:'Inter',fontSize:25,fontWeight:'bolder',border:'none',color:'white'}}><span style={{marginRight:10,fontSize:35,color:'white'}}>+</span> New Order</button>
+            </div> */}
         </div>
     );
 }
