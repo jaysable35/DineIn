@@ -31,7 +31,7 @@
         });
     });
 
-    mongoose.connect(process.env.MONGO_UL)
+    mongoose.connect('mongodb+srv://dineincare:SSJdinein@cluster0.kqigz.mongodb.net/')
         .then(() => console.log("DB Connected"))
         .catch(err => console.log('MongoDB Connection Error:', err));
 
