@@ -19,7 +19,7 @@ const Kart = ({ cart, updateCart }) => {
             // Log cart data to ensure marathi field is included
             console.log('Cart data before sending:', cart);
             
-            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
