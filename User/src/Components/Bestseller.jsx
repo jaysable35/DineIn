@@ -17,9 +17,9 @@ function Bestsellers({ onBestsellerClick, cart = [],updateCart }) {
     };
 
     const items = [
-        { id: 19, name: 'Peshwai', price: 100, img:peshwai },
-        { id: 22, name: 'Sadashiv', price: 100, img:sadashiv },
-        { id: 21, name: 'Puneri Grill', price:100, img:bombay }
+        { id: 19, name: 'Peshwai',marathi:'पेशवाई', price: 100, img:peshwai },
+        { id: 22, name: 'Sadashiv',marathi:'सदाशिव', price: 100, img:sadashiv },
+        { id: 21, name: 'Puneri Grill',marathi:'पुणेरी ग्रिल', price:100, img:bombay }
     ];
     const handleBestsellerClick = (item, quantity) => {
         updateCart(item, quantity);

@@ -15,21 +15,23 @@ function App() {
 
   const updateCart = (item, change) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
-      if (existingItem) {
-        const newQuantity = Math.max(0, existingItem.quantity + change);
-        if (newQuantity === 0) {
-          return prevCart.filter(cartItem => cartItem.id !== item.id);
+        const existingItem = prevCart.find(cartItem => cartItem.id === item.id);
+        if (existingItem) {
+            const newQuantity = Math.max(0, existingItem.quantity + change);
+            if (newQuantity === 0) {
+                return prevCart.filter(cartItem => cartItem.id !== item.id);
+            }
+            return prevCart.map(cartItem => 
+                cartItem.id === item.id ? { ...cartItem, quantity: newQuantity, marathi: item.marathi } : cartItem
+            );
+        } else if (change > 0) {
+            return [...prevCart, { ...item, quantity: change, marathi: item.marathi }];
         }
-        return prevCart.map(cartItem => 
-          cartItem.id === item.id ? { ...cartItem, quantity: newQuantity } : cartItem
-        );
-      } else if (change > 0) {
-        return [...prevCart, { ...item, quantity: change }];
-      }
-      return prevCart;
+        return prevCart;
     });
-  };
+};
+
+
 
   const router = createBrowserRouter([
     {

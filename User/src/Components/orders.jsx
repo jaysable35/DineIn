@@ -14,36 +14,42 @@ const Kart = ({ cart, updateCart }) => {
     const navigate = useNavigate();
 
     const handlePlaceOrder = async () => {
-        setLoading(true); // Activate the preloader
+        setLoading(true);
         try {
-            const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
+            // Log cart data to ensure marathi field is included
+            console.log('Cart data before sending:', cart);
+            
+            const response = await fetch('https://dinein-6bqx.onrender.com/ambika-admin/dashboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    cart,
-                    total: getTotal()
+                    cart: cart.map((item, index) => ({
+                        ...item,
+                        marathi: item.marathi || '', // Ensure marathi field is included
+                        parcel: selectedItems[index] // Ensure parcel status is included
+                    })),
+                    total: getTotal(),
                 }),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to place order');
             }
-
+    
             const result = await response.json();
             console.log('Order placed successfully:', result);
-            setToken(result.token); // Save the token for the user
-
-            // Navigate to the FinalOrder page with the token number
+            setToken(result.token);
             navigate('/ambika/user/cart/placedorder', { state: { token: result.token, cart: cart } });
         } catch (error) {
             console.error('Error placing order:', error);
-            // Optionally show an error message to the user
         } finally {
-            setLoading(false); // Deactivate the preloader
+            setLoading(false);
         }
     };
+    
+    
 
     const handleAddClick = (item) => {
         updateCart(item, 1);
@@ -97,15 +103,6 @@ const Kart = ({ cart, updateCart }) => {
                     <div className="header">
                         <button onClick={() => navigate('/ambika/user')} className="back-button">←</button>
                         <div className="title" style={{ position: 'relative', left: 0 }}>Cart</div>
-                        {/* <div className="selectAll" style={{ display: 'flex', top: 20, position: 'relative' }}>
-                            <input
-                                type="checkbox"
-                                style={{ height: 20, width: 20 }}
-                                checked={selectAll}
-                                onChange={handleSelectAll}
-                            />
-                            <label>Select All</label>
-                        </div> */}
                     </div>
 
                     <div className="cart-items">
@@ -113,6 +110,7 @@ const Kart = ({ cart, updateCart }) => {
                             <div key={item.id} className="cart-item">
                                 <img src={item.img || (item.veg ? vegIcon : nonVegIcon)} alt="item type" className="item-icon" />
                                 <div className="item-details">
+                                    <div className="marathi"style={{color:'#EDECE9'}}>Marathi: {item.marathi || 'N/A'}</div>
                                     <div className="item-name">{item.name}</div>
                                     <div className="item-price">₹{item.price}</div>
                                     <div className="parcel" style={{ display: 'flex' }}>

@@ -34,8 +34,8 @@ function AdminCard({ token, id, onIndex, index, items, onDone, onDecline, showDo
                         <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
                             <div style={{ flex: 2 }}>
                                 {console.log("Item:", item)} {/* Debugging line */}
-                                <span>{item.name_marathi}</span><br />
-                                <span>{item.name} {item.parcel && <span style={{ color: 'green', fontWeight: 'bold' }}>Parcel</span>}</span>
+                                {/* <span>{item.marathi}</span><br /> */}
+                                <span>{item.marathi} {item.parcel && <span style={{ color: 'green', fontWeight: 'bold' }}>Parcel</span>}</span>
                             </div>
                             <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
                                 <span style={{ flex: 1, textAlign: 'right' }}>{item.quantity}</span>

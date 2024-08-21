@@ -3,6 +3,7 @@ import '../Components/admin.css';
 import AdminCard from "./admincard";
 import logo from '../assets/dinein.png';
 import io from "socket.io-client";
+import dotenv from 'dotenv'
 
 const socket = io(import.meta.env.VITE_LOCAL, {
     transports: ['websocket', 'polling'],

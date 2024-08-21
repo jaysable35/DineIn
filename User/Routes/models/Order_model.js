@@ -4,20 +4,22 @@ import Counter from './Counter.js';
 const userOrdersSchema = new mongoose.Schema({
     items: [{ 
         id: Number, 
+        marathi: String,
         name: String, 
         price: Number, 
         quantity: Number,
-         parcel: { type: Boolean, default: false }
+        parcel: { type: Boolean, default: false }
     }],
     total: { type: Number, required: true },
     token: { type: Number, required: true },
     parcel: { type: Boolean, default: false }
-
 });
+
 
 const acceptedOrderSchema= new mongoose.Schema({
     items:[{
         id:Number,
+        marathi:String,
         name:String,
         price:Number,
         quantity:Number,
@@ -33,6 +35,7 @@ const acceptedOrderSchema= new mongoose.Schema({
 const doneOrderSchema= new mongoose.Schema({
     items:[{
         id:Number,
+        marathi:String,
         name:String,
         price:Number,
         quantity:Number,

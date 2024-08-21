@@ -13,12 +13,13 @@ import vn from '../assets/vegnon.jpg'
 import vcn from'../assets/vcn.jpg'
 import jam from '../assets/jam.jpg'
 import c from '../assets/choco.jpg'
+import cn from '../assets/choco-n.jpg'
 
 
 const list =[
 {
     id: 1,
-    name_marathi:"व्हेज सँडविच",
+    marathi:"व्हेज सँडविच",
     name:"Veg Sandwich",
     price:50,
     img:vn,
@@ -26,7 +27,7 @@ const list =[
 },
 {
     id:2,
-    name_marathi:"व्हेज चीज",
+    marathi:"व्हेज चीज",
     name:"Veg Cheese",
     price:70,
     img:vcn,
@@ -34,15 +35,15 @@ const list =[
 },
 {
     id:3,
-    name_marathi:"पुणेरी व्हेज",
+    marathi:"पुणेरी व्हेज",
     name:"Puneri Veg",
     price:90,
-    img:pashwaii,
+    img:vcn,
     amount:1
 },
 {
     id:4,
-    name_marathi:"चीज मेयो",
+    marathi:"चीज मेयो",
     name:"Cheese Mayo",
     price:90,
     img:vcn,
@@ -50,7 +51,7 @@ const list =[
 },
 {
     id:5,
-    name_marathi:"चीज टोमॅटो",
+    marathi:"चीज टोमॅटो",
     name:"Cheese Tomato",
     price:70,
     img:vcn,
@@ -58,7 +59,7 @@ const list =[
 },
 {
     id:6,
-    name_marathi:"चीज बटाटा",
+    marathi:"चीज बटाटा",
     name:"Cheese Potato",
     price:70,
     img:vcn,
@@ -66,7 +67,7 @@ const list =[
 },
 {
     id:7,
-    name_marathi:"जैन सँडविच",
+    marathi:"जैन सँडविच",
     name:"Jain Sandwich",
     price:70,
     img:vcn,
@@ -74,7 +75,7 @@ const list =[
 },
 {
     id:8,
-    name_marathi:"जाम सँडविच",
+    marathi:"जाम सँडविच",
     name:"Jam Sandwich",
     price:60,
     img:jam,
@@ -82,7 +83,7 @@ const list =[
 },
 {
     id:9,
-    name_marathi:"चीज जाम",
+    marathi:"चीज जाम",
     name:"Cheese Jam",
     price:70,
     img:jam,
@@ -90,7 +91,7 @@ const list =[
 },
 {
     id:10,
-    name_marathi:"मसाला ग्रिल",
+    marathi:"मसाला ग्रिल",
     name:"Veg Masala Grill",
     price:80,
     img:vcg,
@@ -98,7 +99,7 @@ const list =[
 },
 {
     id:11,
-    name_marathi:"चीज मसाला ग्रिल",
+    marathi:"चीज मसाला ग्रिल",
     name:"Veg Cheese Masala Grill",
     price:100,
     img:foodImage,
@@ -106,7 +107,7 @@ const list =[
 },
 {
     id:12,
-    name_marathi:"चीज मसाला कॉर्न ग्रिल",
+    marathi:"चीज मसाला कॉर्न ग्रिल",
     name:"Veg Cheese Masala Corn Grill",
     price:100,
     img:vcgcorn,
@@ -114,7 +115,7 @@ const list =[
 },
 {
     id:13,
-    name_marathi:"चीज टिक्का मेयो मसाला ग्रिल",
+    marathi:"चीज टिक्का मेयो मसाला ग्रिल",
     name:"Cheese Tikka Mayo Masala Grill",
     price:100,
     img:mtp,
@@ -122,7 +123,7 @@ const list =[
 },
 {
     id:14,
-    name_marathi:"व्हेज ग्रिल",
+    marathi:"व्हेज ग्रिल",
     name:"Veg Grill",
     price:80,
     img:vg,
@@ -130,7 +131,7 @@ const list =[
 },
 {
     id:15,
-    name_marathi:"चीज ग्रिल",
+    marathi:"चीज ग्रिल",
     name:"Veg Cheese Grill",
     price:100,
     img:vegcg,
@@ -138,7 +139,7 @@ const list =[
 },
 {
     id:16,
-    name_marathi:"प्लेन चीज ग्रिल",
+    marathi:"प्लेन चीज ग्रिल",
     name:"Plain Cheese Grill",
     price:100,
     img:pg,
@@ -146,7 +147,7 @@ const list =[
 },
 {
     id:17,
-    name_marathi:"जैन चीज ग्रिल",
+    marathi:"जैन चीज ग्रिल",
     name:"Jain Cheese Grill",
     price:100,
     img:foodImage,
@@ -154,7 +155,7 @@ const list =[
 },
 {
     id:18,
-    name_marathi:"जैन चीज कॉर्न ग्रिल",
+    marathi:"जैन चीज कॉर्न ग्रिल",
     name:"Jain Veg Cheese Corn Grill",
     price:100,
     img:foodImage,
@@ -162,7 +163,7 @@ const list =[
 },
 {
     id:19,
-    name_marathi:"पेशवाई",
+    marathi:"पेशवाई",
     name:"Peshwai(Nepolian)",
     price:100,
     img:pashwaii,
@@ -170,7 +171,7 @@ const list =[
 },
 {
     id:20,
-    name_marathi:"ब्रेड बटर ग्रिल",
+    marathi:"ब्रेड बटर ग्रिल",
     name:"Bread Butter Grill",
     price:50,
     img:bb,
@@ -178,7 +179,7 @@ const list =[
 },
 {
     id:21,
-    name_marathi:"पुणेरी ग्रिल",
+    marathi:"पुणेरी ग्रिल",
     name:"Puneri Grill",
     price:100,
     img:pashwaii,
@@ -186,7 +187,7 @@ const list =[
 },
 {
     id:22,
-    name_marathi:"सदाशिव ग्रिल",
+    marathi:"सदाशिव ग्रिल",
     name:"Sadashiv Cheese Grill",
     price:100,
     img:sadashiv,
@@ -194,7 +195,7 @@ const list =[
 },
 {
     id:23,
-    name_marathi:"चीज कॉर्न ग्रिल",
+    marathi:"चीज कॉर्न ग्रिल",
     name:"Veg Cheese Corn Grill",
     price:100,
     img:vcgcorn,
@@ -202,7 +203,7 @@ const list =[
 },
 {
     id:24,
-    name_marathi:"चीज शेजवान ग्रिल",
+    marathi:"चीज शेजवान ग्रिल",
     name:"Veg Cheese Shejwan Grill",
     price:100,
     img:foodImage,
@@ -210,7 +211,7 @@ const list =[
 },
 {
     id:25,
-    name_marathi:"कॅप्सिकम कांदा चीज ग्रिल",
+    marathi:"कॅप्सिकम कांदा चीज ग्रिल",
     name:"Capsicum Onion Cheese Grill",
     price:100,
     img:cap,
@@ -218,23 +219,23 @@ const list =[
 },
 {
     id:26,
-    name_marathi:"प्लेन चॉकलेट",
+    marathi:"प्लेन चॉकलेट",
     name:"Plain Chocolate",
     price:60,
-    img:c,
+    img:cn,
     amount:1
 },
 {
     id:27,
-    name_marathi:"प्लेन चीज चॉकलेट",
+    marathi:"प्लेन चीज चॉकलेट",
     name:"Plain Cheese Chocolate",
     price:80,
-    img:c,
+    img:cn,
     amount:1
 },
 {
     id:28,
-    name_marathi:"चॉकलेट ग्रिल",
+    marathi:"चॉकलेट ग्रिल",
     name:"Chocolate Grill",
     price:70,
     img:c,
@@ -242,7 +243,7 @@ const list =[
 },
 {
     id:29,
-    name_marathi:"चीज चॉकलेट ग्रिल",
+    marathi:"चीज चॉकलेट ग्रिल",
     name:"Cheese Chocolate Grill",
     price:80,
     img:c,
