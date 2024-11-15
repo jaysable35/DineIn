@@ -3,12 +3,14 @@ import { useLocation } from 'react-router-dom';
 
 function FinalOrder() {
     const location = useLocation();
-    const { token, cart } = location.state || { token: null, cart: [] };
+    const { token, cart, bottle = 0 } = location.state || { token: null, cart: [], bottle: 0 };
 
+    // Function to calculate the total
     const getTotal = () => {
-        return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+        const itemsTotal= cart.reduce((total, item) => total + item.price * item.quantity, 0) ;
+        return itemsTotal+(bottle * 20)
     };
-
+    console.log("water bottle",bottle);
     return (
         <div style={{ width: '100%', height: '100vh', position: 'relative', background: '#FCFCF9' }}>
             <div className="YourPaymentIsSuccessful" style={{ left: 65, top: 277, position: 'absolute', color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word' }}>
@@ -38,8 +40,17 @@ function FinalOrder() {
                 ) : (
                     <div>No items in the cart.</div>
                 )}
-                
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10px', marginTop: '10px', borderRadius: '16px'}}>
+
+                {/* Display water bottle info */}
+                {bottle > 0 && (
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', marginBottom: '10px', borderRadius: '16px' }}>
+                        <div style={{ flex: '1', fontWeight: 'bold' }}>Water Bottle</div>
+                        <div style={{ flex: '1', textAlign: 'center' }}>{bottle}</div>
+                        <div style={{ flex: '1', textAlign: 'right' }}>₹{bottle * 20}</div>
+                    </div>
+                )}
+
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10px', marginTop: '10px', borderRadius: '16px' }}>
                     <div style={{ flex: '1', fontWeight: 'bold' }}>Total</div>
                     <div style={{ flex: '1', textAlign: 'center' }}></div>
                     <div style={{ flex: '1', textAlign: 'right' }}>₹{getTotal()}</div>

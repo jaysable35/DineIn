@@ -31,12 +31,15 @@ function Menu({ handleClick,cart }) {
             <div className="button" style={{ display: 'flex', justifyContent: 'space-around', position: 'relative', top: 25 }}>
                 <button onClick={() => scrollHandler(Grilled)} style={{ width: 90, height: 90, borderRadius: '100%', background: 'white', border: '0px solid darkgrey' }}>
                     <img src={Grill} alt="grilled" style={{ height: 90, width: 90 }} />
+                    <h3 style={{fontWeight:'normal',fontFamily:'Inter'}}>Grill</h3>
                 </button>
                 <button onClick={() => scrollHandler(NonGrilled)} style={{ width: 90, height: 90, borderRadius: '100%', background: 'white', border: '1px solid darkgrey' }}>
                     <img src={NonGrill} alt="none" style={{ height: 90, width: 90 }} />
+                    <h3 style={{fontWeight:'normal',fontFamily:'Inter'}}>Non-Grill</h3>
                 </button>
                 <button onClick={() => scrollHandler(Chocolate)} style={{ width: 90, height: 90, borderRadius: '100%', background: 'white', border: '1px solid darkgrey' }}>
                     <img src={Choco} alt="chocolate" style={{ height: 90, width: 90 }} />
+                    <h3 style={{fontWeight:'normal',fontFamily:'Inter'}}>Chocolate  </h3>
                 </button>
             </div>
             <div style={{ textAlign: 'center', color: '#6D6D6D', position: 'relative', top: '280px', fontWeight: 'bolder', fontSize: 50, fontFamily: 'Inter' }}>

@@ -1,25 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import vegIcon from '../assets/food.jpg';
 import nonVegIcon from '../assets/food.jpg';
 import "../Components/Kart.css";
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const Kart = ({ cart, updateCart }) => {
+const Kart = ({ cart=[], updateCart, disableOrder,setDisableOrder }) => {
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [token, setToken] = useState(null);
+    const [bottle, setBottle] = useState(0);
     const [loading, setLoading] = useState(false); // State for preloader
     const [selectedItems, setSelectedItems] = useState(cart.map(item => item.parcel || false)); // State for selected items
+    const [disablePlaceOrder, setDisablePlaceOrder] = useState(false);
     const [selectAll, setSelectAll] = useState(false); // State for select all checkbox
     const navigate = useNavigate();
 
     const handlePlaceOrder = async () => {
+        
+       
         setLoading(true);
         try {
             // Log cart data to ensure marathi field is included
             console.log('Cart data before sending:', cart);
-            
-            const response = await fetch('https://dinein-6bqx.onrender.com/ambika/user/cart', {
+
+            const response = await fetch('http://localhost:3001/ambika/user/cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -28,28 +32,27 @@ const Kart = ({ cart, updateCart }) => {
                     cart: cart.map((item, index) => ({
                         ...item,
                         marathi: item.marathi || '', // Ensure marathi field is included
-                        parcel: selectedItems[index] // Ensure parcel status is included
+                        parcel: selectedItems[index], // Ensure parcel status is included
+                        bottle:bottle
                     })),
                     total: getTotal(),
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to place order');
             }
-    
+
             const result = await response.json();
             console.log('Order placed successfully:', result);
             setToken(result.token);
-            navigate('/ambika/user/cart/placedorder', { state: { token: result.token, cart: cart } });
+            navigate('/ambika/user/cart/placedorder', { state: { token: result.token, cart: cart, bottle: bottle } });
         } catch (error) {
             console.error('Error placing order:', error);
         } finally {
             setLoading(false);
         }
     };
-    
-    
 
     const handleAddClick = (item) => {
         updateCart(item, 1);
@@ -60,20 +63,8 @@ const Kart = ({ cart, updateCart }) => {
     };
 
     const getTotal = () => {
-        return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-    };
-
-    const handleSelectAll = (e) => {
-        const isSelected = e.target.checked;
-        setSelectAll(isSelected);
-        setSelectedItems(cart.map(() => isSelected));
-
-        // Update the cart items to reflect the selected parcel status
-        const updatedCart = cart.map(item => ({
-            ...item,
-            parcel: isSelected
-        }));
-        updateCart(updatedCart);
+        const itemsTotal= cart.reduce((total, item) => total + item.price * item.quantity, 0);
+        return itemsTotal+(bottle * 20)
     };
 
     const handleItemSelect = (index) => {
@@ -86,12 +77,43 @@ const Kart = ({ cart, updateCart }) => {
         updateCart(updatedCart);
     };
 
+    const handleBottleCount = () => {
+        setBottle(bottle + 1);
+    };
+
+    const handleRemoveBottleCount = () => {
+        if (bottle > 0) {
+            setBottle(bottle - 1);
+        }
+    };
+
     const allSelected = selectedItems.every(Boolean);
 
     if (orderPlaced) {
         return null; // We handle the redirection in the navigate call
     }
+    let placeOrder;
 
+    useEffect(() => {
+        console.log("disableOrder:", disableOrder); // Should log true after "YES" is clicked in the parent
+    }, [disableOrder]);
+
+    // Conditional rendering of the Place Order button based on disableOrder state
+    placeOrder = (
+        <div className="place-order">
+            <button
+                className="place-order-button"
+                onClick={disableOrder ? null : handlePlaceOrder} // Only handlePlaceOrder if not disabled
+                disabled={disableOrder} // Disable the button if disableOrder is true
+                style={{
+                    backgroundColor: disableOrder ? '#d3d3d3' : '#4CAF50', // Change color when disabled
+                    cursor: disableOrder ? 'not-allowed' : 'pointer',
+                }}
+            >
+                <p style={{ color: disableOrder ? 'black' : 'white' }}>Place Order</p>
+            </button>
+        </div>
+    );
     return (
         <div className="kart-container">
             {loading ? (
@@ -110,7 +132,7 @@ const Kart = ({ cart, updateCart }) => {
                             <div key={item.id} className="cart-item">
                                 <img src={item.img || (item.veg ? vegIcon : nonVegIcon)} alt="item type" className="item-icon" />
                                 <div className="item-details">
-                                    <div className="marathi"style={{color:'#EDECE9'}}>Marathi: {item.marathi || 'N/A'}</div>
+                                    <div className="marathi" style={{ color: '#EDECE9' }}>Marathi: {item.marathi || 'N/A'}</div>
                                     <div className="item-name">{item.name}</div>
                                     <div className="item-price">₹{item.price}</div>
                                     <div className="parcel" style={{ display: 'flex' }}>
@@ -133,7 +155,15 @@ const Kart = ({ cart, updateCart }) => {
                     </div>
 
                     <div className="bill-details">
-                        <div className="bill-item">
+                        <div className="bottle" style={{ marginBottom: 25, display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ marginTop: 10 }}>Add Water Bottle (₹20) </span>
+                            <div className="increment" style={{ marginTop: 5 }}>
+                                <button onClick={handleRemoveBottleCount} style={{ border: '1px solid #A8A3A3', width: '30px', height: '30px', borderRadius: '4px', fontSize: '18px', lineHeight: 1, marginRight: 20 }}>-</button>
+                                <span>{bottle}</span>
+                                <button onClick={handleBottleCount} style={{ border: '1px solid #A8A3A3', width: '30px', height: '30px', borderRadius: '4px', fontSize: '18px', lineHeight: 1, marginLeft: 20 }}>+</button>
+                            </div>
+                        </div>
+                        <div className="bill-item" style={{ display: 'flex' }}>
                             <span>Item total</span>
                             <span>₹{getTotal()}</span>
                         </div>
@@ -143,9 +173,9 @@ const Kart = ({ cart, updateCart }) => {
                         </div>
                     </div>
 
-                    <div className="place-order">
-                        <button className="place-order-button" onClick={handlePlaceOrder}>Place Order</button>
-                    </div>
+                        {placeOrder}
+
+
                 </>
             )}
         </div>
