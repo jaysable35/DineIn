@@ -258,7 +258,7 @@ function Admin() {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', gap: 30, position: 'relative' }}>
             
-            {showWarning && <Warning onClose={handleHideWarning} />}
+            {showWarning && <Warning rightnow={handleHideWarning} />}
             
             {/* Navbar */}
             <div className="Navbar" style={{ width: '100%', height: 80, left: 0, top: 0, position: 'relative', background: '#0D0F11' }}>

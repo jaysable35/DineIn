@@ -115,7 +115,7 @@ const list =[
 },
 {
     id:13,
-    marathi:"चीज टिक्का मेयो मसाला ग्रिल",
+    marathi:"चीज टिक्का मेयो ग्रिल",
     name:"Cheese Tikka Mayo Masala Grill",
     price:100,
     img:mtp,
@@ -164,7 +164,7 @@ const list =[
 {
     id:19,
     marathi:"पेशवाई",
-    name:"Peshwai(Nepolian)",
+    name:"Peshwai Grill(Nepolian)",
     price:100,
     img:pashwaii,
     amount:1

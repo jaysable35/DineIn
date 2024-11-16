@@ -4,6 +4,7 @@ import vegIcon from '../assets/food.jpg';
 import nonVegIcon from '../assets/food.jpg';
 import "../Components/Kart.css";
 import ClipLoader from 'react-spinners/ClipLoader';
+import Warning from './warning';
 
 const Kart = ({ cart=[], updateCart, disableOrder,setDisableOrder }) => {
     const [orderPlaced, setOrderPlaced] = useState(false);
@@ -17,7 +18,7 @@ const Kart = ({ cart=[], updateCart, disableOrder,setDisableOrder }) => {
 
     const handlePlaceOrder = async () => {
         
-       
+       if(disableOrder) return;
         setLoading(true);
         try {
             // Log cart data to ensure marathi field is included
@@ -114,6 +115,8 @@ const Kart = ({ cart=[], updateCart, disableOrder,setDisableOrder }) => {
             </button>
         </div>
     );
+
+
     return (
         <div className="kart-container">
             {loading ? (
@@ -172,8 +175,9 @@ const Kart = ({ cart=[], updateCart, disableOrder,setDisableOrder }) => {
                             <span>₹{getTotal()}</span>
                         </div>
                     </div>
-
+                        
                         {placeOrder}
+                        
 
 
                 </>
